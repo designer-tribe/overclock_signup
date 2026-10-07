@@ -4,10 +4,10 @@ Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
 Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
-kiri, intro + form di kanan. Semua aset brand (logo, foto portrait) sudah aslinya.
+kiri, intro + form di kanan. Semua aset brand sudah aslinya.
 
-Monitor pada foto mengikuti arah kursor — fotonya dipecah jadi dua layer
-(monitor / badan) lalu layer monitor dirotasi pakai CSS perspective. Lihat
+Figur CRT-head adalah **video yang di-scrub mouse**: videonya tidak pernah
+autoplay, gerakan mouse horizontal yang menarik playhead-nya. Lihat
 `components/hero/HeroVisual.tsx`.
 
 Tidak ada WebGL yang ter-mount saat ini. Paketnya tetap terpasang untuk pekerjaan
@@ -50,9 +50,8 @@ app/
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Foto portrait 2 layer + rotasi monitor mengikuti kursor
-assets/             Layer foto (tidak di-serve mentah; dipakai lewat static import)
-  brand/Logo.tsx      Lockup Overclock (aproksimasi)
+  hero/HeroVisual.tsx Video figur + scrub mengikuti mouse
+  brand/Logo.tsx      Lockup Overclock (aset asli, di-inline)
   form/               SignupForm · Field
 providers/
   SmoothScrollProvider.tsx
@@ -100,3 +99,30 @@ Tidak ada komponen atau action yang perlu disentuh.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
 - `robots` masih `noindex` di `app/layout.tsx` — lepas saat siap publik.
+
+## Video figur (scrub)
+
+`public/monitor-scrub.{mp4,webm}` bukan file asli — sudah diproses ulang:
+
+```bash
+ffmpeg -i <sumber>.mp4 \
+  -vf "colorlevels=romax=0.98413:gomax=0.98400:bomax=0.97571,scale=-2:1200" \
+  -c:v libx264 -preset slow -crf 26 \
+  -g 1 -keyint_min 1 -sc_threshold 0 -bf 0 \
+  -pix_fmt yuv420p -an -movflags +faststart public/monitor-scrub.mp4
+```
+
+Dua hal penting kalau videonya diganti:
+
+- **`-g 1` wajib.** File aslinya hanya punya satu keyframe untuk 5 detik penuh,
+  jadi tiap seek harus decode maju dari frame 0 dan scrub-nya tersendat. Dengan
+  semua frame jadi keyframe, seek praktis gratis — dan filenya justru lebih
+  kecil karena sekalian di-downscale.
+- **Filter `colorlevels` menggeser latar video ke `--color-paper`.** Videonya
+  tidak punya alpha; aslinya duduk di `#fcfaf7` sementara halaman `#f8f6f1`.
+  Angka filternya = target ÷ sumber per kanal. Kalau palet halaman berubah,
+  hitung ulang.
+
+MP4 ditaruh lebih dulu dari WebM: pada encoding all-intra, x264 menghasilkan file
+lebih kecil daripada VP9 (2.4MB lawan 4.6MB). WebM hanya fallback untuk build
+tanpa H.264.

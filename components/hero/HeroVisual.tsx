@@ -1,125 +1,146 @@
 "use client";
 
-import { useRef } from "react";
-import Image from "next/image";
-import { gsap, useGSAP } from "@/lib/gsap";
-import { usePointer } from "@/hooks/usePointer";
+import { useEffect, useRef } from "react";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
-import body from "@/assets/hero-portrait-body.webp";
-import monitor from "@/assets/hero-portrait-monitor.webp";
 
 /**
- * The CRT-head portrait, with the monitor turning to follow the cursor.
+ * The CRT-head figure, scrubbed by the mouse.
  *
- * The photograph is split into two layers — the monitor and everything below it
- * — and only the monitor is rotated. Both layers are the full original canvas
- * with the other part erased, so they stack with no offset arithmetic: the two
- * together are pixel-identical to the original when the monitor is at rest.
+ * The video never plays on its own. It is parked on frame 0, and horizontal
+ * mouse movement drags the playhead: move right and it runs forward, move left
+ * and it runs back. The monitor turning is baked into the footage, so what used
+ * to be a CSS rotation of a flat cut-out is now real filmed motion.
  *
- * The split is at the narrowest row of the silhouette, measured from the alpha
- * channel (row 719 of 1414, where the neck is 317px across). The body layer
- * keeps a 28px band above that line, hidden under the monitor at rest, so the
- * rotation cannot open the seam into a transparent gap.
+ * Two things were done to the source file to make this work (see the commit
+ * message for the exact ffmpeg invocation):
  *
- * The pivot sits at that seam rather than at the layer's centre, so the monitor
- * turns about the neck the way a head does. Pivoting at the centre would swing
- * the base out from the shoulders and read as a floating box.
- *
- * Why CSS perspective rather than real 3D: the photograph's realism — worn
- * plastic, dust, the grille — is the point, and nothing modelled would match it
- * beside a photographic body. The cost is that the angles have to stay modest;
- * much past these and a flat layer stops reading as a turning head and starts
- * reading as tilting paper.
+ * 1. It was re-encoded all-intra. The original had a single keyframe for the
+ *    whole 5 seconds, so every seek had to decode forward from frame 0 and
+ *    scrubbing crawled. Every frame is now a keyframe, which makes seeks
+ *    effectively free. Counter-intuitively the file also got smaller, because
+ *    it was downscaled at the same time.
+ * 2. Its backdrop was colour-shifted onto `--color-paper`. The footage has no
+ *    alpha and sat on #fcfaf7 against the page's #f8f6f1 — close enough to look
+ *    like a mistake rather than a deliberate panel.
  */
-const MAX_YAW = 13;
-const MAX_PITCH = 7;
 
-/** Measured from the alpha channel: the centre of the neck at the seam row. */
-const PIVOT = "51.23% 50.85%";
+/** Fraction of the clip traversed by dragging the full width of the window once. */
+const SENSITIVITY = 0.8;
+
+/** Below this, a further seek would not change a visible frame. */
+const SEEK_EPSILON = 0.01;
 
 export function HeroVisual({ className = "" }: { className?: string }) {
-  const scope = useRef<HTMLDivElement>(null);
-  const monitorRef = useRef<HTMLDivElement>(null);
-  const pointer = usePointer();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  useGSAP(
-    () => {
-      const el = monitorRef.current;
-      if (!el || prefersReducedMotion()) return;
+  // Mutable scrub state. Deliberately a ref: this updates on every mousemove
+  // and none of it belongs in render.
+  const scrub = useRef({ targetTime: 0, isSeeking: false, prevX: null as number | null });
 
-      // quickTo keeps a live tween per property, so feeding it the raw target
-      // every frame yields smooth easing without hand-rolling a lerp — and
-      // without allocating a tween per pointer event.
-      const yaw = gsap.quickTo(el, "rotationY", { duration: 0.8, ease: "power3" });
-      const pitch = gsap.quickTo(el, "rotationX", { duration: 0.8, ease: "power3" });
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-      const onTick = () => {
-        const p = pointer.current;
-        // `active` is 0 until the pointer first moves and returns to 0 when it
-        // leaves the window, so the monitor rests square instead of snapping.
-        yaw(p.x * p.active * MAX_YAW);
-        // Negated: CSS rotateX(+) tips the top away, which reads as looking
-        // down, and the cursor being high should make it look up.
-        pitch(-p.y * p.active * MAX_PITCH);
-      };
+    video.pause();
 
-      gsap.ticker.add(onTick);
-      return () => gsap.ticker.remove(onTick);
-    },
-    { scope },
-  );
+    // Scrubbing is user-driven, but it is still motion. Leaving the first frame
+    // up is the honest equivalent of the static portrait.
+    if (prefersReducedMotion()) return;
+
+    /**
+     * The browser services one seek at a time; assigning `currentTime` while a
+     * seek is in flight silently drops the request. So seeks are chained off
+     * `seeked` instead: each completion checks whether the target has moved on
+     * and, if so, fires the next one.
+     */
+    const seekToTarget = () => {
+      const { targetTime } = scrub.current;
+      if (Math.abs(video.currentTime - targetTime) <= SEEK_EPSILON) {
+        scrub.current.isSeeking = false;
+        return;
+      }
+      scrub.current.isSeeking = true;
+      video.currentTime = targetTime;
+    };
+
+    const onMouseMove = (event: MouseEvent) => {
+      const { duration } = video;
+      // Metadata may not have landed yet, and duration is NaN until it does.
+      if (!Number.isFinite(duration) || duration <= 0) return;
+
+      const x = event.clientX / window.innerWidth;
+      const previous = scrub.current.prevX;
+      scrub.current.prevX = x;
+
+      // The first event only establishes an origin — there is no delta yet, and
+      // treating x as one would jump the playhead by wherever the cursor
+      // happened to enter the window.
+      if (previous === null) return;
+
+      const offset = (x - previous) * SENSITIVITY * duration;
+      scrub.current.targetTime = Math.min(
+        duration,
+        Math.max(0, scrub.current.targetTime + offset),
+      );
+
+      if (!scrub.current.isSeeking) seekToTarget();
+    };
+
+    video.addEventListener("seeked", seekToTarget);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+    return () => {
+      video.removeEventListener("seeked", seekToTarget);
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, []);
 
   return (
-    <div ref={scope} className={`relative ${className}`}>
+    <div className={`relative ${className}`}>
       {/*
         Below lg this is a normal block in the stacked flow. From lg it fills
-        the stretched grid cell, which runs from the top of the form card to
-        the bottom of the page — so the figure's top sits level with the card
-        and its bottom reaches the edge, at whatever the viewport height.
+        the stretched grid cell, which runs from the top of the form card to the
+        bottom of the page, so the figure's top sits level with the card and its
+        bottom reaches the edge at any viewport height.
 
-        `h-full` is the ceiling, not a starting point: the cell top *is* the
-        headline's lower bound, so anything above 100% pushes the monitor up
-        over the headline.
+        `h-full` is the ceiling, not a starting point: the cell's top edge is
+        also the headline's lower bound, so anything above 100% rides up over
+        the headline.
 
-        max-h caps the width that the height implies, since the width follows
-        the aspect ratio. Without it a very tall viewport grows the figure
-        sideways until it reaches the form. 63vw is the height at which the
-        figure's right edge, with the left shift applied, still clears the form
-        column.
+        max-h caps the width that the height implies, since width follows the
+        aspect ratio; without it a tall viewport grows the figure sideways until
+        it reaches the form.
+
+        The aspect ratio has to be declared because, unlike the image it
+        replaced, the video gives the box no intrinsic size to grow from.
       */}
-      <div
-        className="relative mx-auto w-full max-w-[33rem] lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:h-full lg:max-h-[63vw] lg:w-auto lg:max-w-none"
-        // Perspective on the shared parent so both layers resolve to one
-        // vanishing point. Large value: a short one exaggerates the foreshortening
-        // and the monitor starts to look like it is lunging at the cursor.
-        style={{ perspective: "1600px" }}
-      >
+      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:h-full lg:max-h-[63vw] lg:w-auto lg:max-w-none">
         {/*
-          The body is in normal flow, so it sets the box size for both layers
-          and there is no height to declare by hand.
-        */}
-        <Image
-          src={body}
-          alt=""
-          priority
-          placeholder="blur"
-          sizes="(min-width: 1024px) 46rem, (min-width: 640px) 60vw, 90vw"
-          className="h-auto w-full lg:h-full lg:w-auto lg:max-w-none"
-        />
+          preload="auto" on purpose: the whole clip has to be buffered before
+          scrubbing feels instant, and a hero the visitor will immediately play
+          with is the one case that earns an eager download.
 
-        <div
-          ref={monitorRef}
-          className="absolute inset-0"
-          style={{ transformOrigin: PIVOT, willChange: "transform" }}
+          H.264 first, even though VP9 is the more modern codec: all-intra
+          encoding strips out the inter-frame prediction VP9 wins on, so here
+          x264 is the smaller file (2.4MB against 4.6MB at matched quality).
+          The WebM is only a fallback for builds shipped without H.264 — some
+          Linux Chromium packages, and the headless Chromium this was tested
+          in, which cannot decode H.264 at all.
+        */}
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          preload="auto"
+          // 23KB still of frame 0, so the figure is up immediately instead of
+          // leaving an empty panel for however long the clip takes to arrive.
+          poster="/monitor-scrub-poster.webp"
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover"
         >
-          <Image
-            src={monitor}
-            alt=""
-            priority
-            sizes="(min-width: 1024px) 46rem, (min-width: 640px) 60vw, 90vw"
-            className="h-full w-full"
-          />
-        </div>
+          <source src="/monitor-scrub.mp4" type="video/mp4" />
+          <source src="/monitor-scrub.webm" type="video/webm" />
+        </video>
       </div>
     </div>
   );
