@@ -98,23 +98,22 @@ export function HeroVisual({ className = "" }: { className?: string }) {
   return (
     <div className={`relative ${className}`}>
       {/*
-        Below lg this is a normal block in the stacked flow. From lg it fills
-        the stretched grid cell, which runs from the top of the form card to the
-        bottom of the page, so the figure's top sits level with the card and its
-        bottom reaches the edge at any viewport height.
+        Below lg this is a normal block in the stacked flow, where the declared
+        aspect ratio gives the box a size — unlike the image it replaced, a
+        video brings no intrinsic one.
 
-        `h-full` is the ceiling, not a starting point: the cell's top edge is
-        also the headline's lower bound, so anything above 100% rides up over
-        the headline.
+        From lg the box fills the stretched grid cell instead, which runs from
+        the top of the form card to the bottom of the page, and takes its width
+        from the viewport. Filling the cell is what guarantees no gap at the
+        bottom at any viewport height. The aspect ratio is dropped there on
+        purpose, so the box can be wider than the clip — that mismatch is what
+        makes `object-cover` crop the figure at the waist.
 
-        max-h caps the width that the height implies, since width follows the
-        aspect ratio; without it a tall viewport grows the figure sideways until
-        it reaches the form.
-
-        The aspect ratio has to be declared because, unlike the image it
-        replaced, the video gives the box no intrinsic size to grow from.
+        Width is in vw rather than a fixed size because the form column also
+        begins at roughly half the viewport, so anything absolute drifts into
+        the card as the window narrows.
       */}
-      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:h-full lg:max-h-[63vw] lg:w-auto lg:max-w-none">
+      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:inset-y-0 lg:left-0 lg:mx-0 lg:aspect-auto lg:h-full lg:w-[52vw] lg:max-w-none">
         {/*
           preload="auto" on purpose: the whole clip has to be buffered before
           scrubbing feels instant, and a hero the visitor will immediately play
@@ -122,7 +121,7 @@ export function HeroVisual({ className = "" }: { className?: string }) {
 
           H.264 first, even though VP9 is the more modern codec: all-intra
           encoding strips out the inter-frame prediction VP9 wins on, so here
-          x264 is the smaller file (2.4MB against 4.6MB at matched quality).
+          x264 is the smaller file (2.1MB against 2.6MB here).
           The WebM is only a fallback for builds shipped without H.264 — some
           Linux Chromium packages, and the headless Chromium this was tested
           in, which cannot decode H.264 at all.
@@ -136,7 +135,11 @@ export function HeroVisual({ className = "" }: { className?: string }) {
           // leaving an empty panel for however long the clip takes to arrive.
           poster="/monitor-scrub-poster.webp"
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover"
+          // object-top, not the default centre: the box is wider than the clip,
+          // so cover scales by width and the surplus height is trimmed — and it
+          // has to come off the bottom, cropping the figure at the waist rather
+          // than taking the top off its head.
+          className="absolute inset-0 h-full w-full object-cover object-top"
         >
           <source src="/monitor-scrub.mp4" type="video/mp4" />
           <source src="/monitor-scrub.webm" type="video/webm" />

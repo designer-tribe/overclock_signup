@@ -102,27 +102,34 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 ## Video figur (scrub)
 
-`public/monitor-scrub.{mp4,webm}` bukan file asli — sudah diproses ulang:
+`public/monitor-scrub.{mp4,webm}` bukan file asli — diproses ulang lewat
+`scripts/key-video.py` + ffmpeg. Tiga hal yang dilakukan, dan ketiganya penting:
+
+1. **Latar di-key lalu di-composite ulang ke warna paper.** Video tidak punya
+   alpha. Latar aslinya bergeser 2–3 level antar-frame dan punya vignette 4–7
+   level dalam satu frame — itu yang terlihat sebagai "latar menerang di
+   beberapa frame". Koreksi warna statis tidak bisa menuntaskannya, jadi latar
+   dipisahkan dulu (flood-fill dari tepi + pemulihan berbasis warna untuk celah
+   antar kabel), baru di-composite ke satu warna datar.
+2. **`-g 1` wajib.** File aslinya hanya punya satu keyframe untuk 5 detik penuh,
+   jadi tiap seek harus decode maju dari frame 0 dan scrub-nya tersendat.
+3. **Warna composite dikompensasi.** Round-trip RGB → yuv420 → RGB menggeser
+   nilai beberapa level, dan browser menggeser berbeda dari ffmpeg. Angka di
+   script (247, 246, 241) adalah hasil kalibrasi terhadap **decode browser**,
+   bukan nilai token mentah. Kalau palet berubah, kalibrasi ulang dengan
+   mengukur di browser, bukan dengan menyalin token.
 
 ```bash
-ffmpeg -i <sumber>.mp4 \
-  -vf "colorlevels=romax=0.98413:gomax=0.98400:bomax=0.97571,scale=-2:1200" \
-  -c:v libx264 -preset slow -crf 26 \
-  -g 1 -keyint_min 1 -sc_threshold 0 -bf 0 \
-  -pix_fmt yuv420p -an -movflags +faststart public/monitor-scrub.mp4
+python3 scripts/key-video.py <sumber>.mp4 public/
 ```
 
-Dua hal penting kalau videonya diganti:
-
-- **`-g 1` wajib.** File aslinya hanya punya satu keyframe untuk 5 detik penuh,
-  jadi tiap seek harus decode maju dari frame 0 dan scrub-nya tersendat. Dengan
-  semua frame jadi keyframe, seek praktis gratis — dan filenya justru lebih
-  kecil karena sekalian di-downscale.
-- **Filter `colorlevels` menggeser latar video ke `--color-paper`.** Videonya
-  tidak punya alpha; aslinya duduk di `#fcfaf7` sementara halaman `#f8f6f1`.
-  Angka filternya = target ÷ sumber per kanal. Kalau palet halaman berubah,
-  hitung ulang.
-
 MP4 ditaruh lebih dulu dari WebM: pada encoding all-intra, x264 menghasilkan file
-lebih kecil daripada VP9 (2.4MB lawan 4.6MB). WebM hanya fallback untuk build
-tanpa H.264.
+lebih kecil daripada VP9 (2.1MB lawan 2.6MB). WebM hanya fallback untuk build
+tanpa H.264 — termasuk Chromium headless, yang tidak bisa decode H.264 sama
+sekali, jadi **jalur MP4 tidak pernah terverifikasi otomatis**; cek manual di
+browser kalau videonya diganti.
+
+Versi beralpha (VP9 `yuva420p`) juga sudah diuji dan berfungsi, tapi tidak
+dipakai: ukurannya 5.5MB lawan 2.1MB untuk hasil visual yang sama di atas latar
+datar. Kalau figur ini nanti dipakai di atas latar bergradasi atau berwarna,
+itu jalur yang benar — script-nya sudah menghasilkan frame RGBA.
