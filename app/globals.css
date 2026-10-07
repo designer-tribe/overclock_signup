@@ -1,0 +1,49 @@
+@import "tailwindcss";
+/* Lenis' own styles: sets html/body heights and the `lenis-stopped` behaviour.
+   Without this the smooth-scroll container measures the page wrong. */
+@import "lenis/dist/lenis.css";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Placeholder brand tokens — these three also feed the backdrop shader
+     (components/hero/shaders/backdrop.glsl.ts). Keep them in step when the real
+     palette lands, or the WebGL layer and the DOM will drift apart. */
+  --color-ink: #0a0a12;
+  --color-deep: #1d2b64;
+  --color-ember: #f27a54;
+}
+
+html {
+  background-color: var(--color-ink);
+  /* The page is one section; anything scroll-linked added later gets smooth
+     anchor behaviour for free, and this is ignored under reduced motion. */
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #ededed;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  /* No horizontal scroll: the shader quad and the entrance transforms both
+     briefly extend past the viewport. */
+  overflow-x: hidden;
+}
+
+/* GSAP sets `visibility` via autoAlpha, but elements that start hidden do so in
+   markup so there is no flash before the timeline is built. */
+[data-fade] {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Safety net: if a timeline never runs, nothing may stay invisible. */
+  [data-fade] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
