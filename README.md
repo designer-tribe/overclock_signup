@@ -4,11 +4,10 @@ Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
 Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
-kiri, intro + form di kanan. Mark Overclock di dalam layar CRT dirender live
-sebagai objek 3D (`components/hero/mark/`).
+kiri, intro + form di kanan. Semua aset brand (logo, foto portrait) sudah aslinya.
 
-Yang masih menunggu: **foto portrait (CRT head) belum ada asetnya** — saat ini
-placeholder dengan aspect ratio yang benar. Lihat `components/hero/HeroVisual.tsx`.
+Tidak ada WebGL yang ter-mount saat ini. Paketnya tetap terpasang untuk pekerjaan
+3D berikutnya.
 
 ## Stack
 
@@ -17,7 +16,7 @@ placeholder dengan aspect ratio yang benar. Lihat `components/hero/HeroVisual.ts
 | Framework | Next.js 16 (App Router) · React 19 · TypeScript |
 | Styling | Tailwind CSS v4 (CSS-first, `@theme` di `app/globals.css`) |
 | Animasi | GSAP 3.15 + `@gsap/react` — ScrollTrigger & SplitText sudah gratis di paket publik |
-| 3D / WebGL | three · `@react-three/fiber` v9 · drei · postprocessing |
+| 3D / WebGL | three · `@react-three/fiber` v9 · drei · postprocessing — terpasang, belum dipakai |
 | Smooth scroll | Lenis, didorong dari `gsap.ticker` |
 | Form | react-hook-form + Zod (satu skema dipakai client **dan** server) |
 
@@ -47,8 +46,7 @@ app/
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Frame portrait + layar CRT tempat mark 3D dipasang
-  hero/mark/          Mark 3D: geometri, scene, post-processing CRT
+  hero/HeroVisual.tsx Foto portrait (next/image, static import)
   brand/Logo.tsx      Lockup Overclock (aproksimasi)
   form/               SignupForm · Field
 providers/
@@ -92,14 +90,10 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 ## Yang belum dikerjakan
 
-- **Foto portrait.** Taruh cut-out di `public/hero-portrait.webp`, lalu ikuti
-  instruksi di `components/hero/HeroVisual.tsx`.
-- **Posisi mark 3D.** Rect layar CRT ada di `SCREEN_RECT` (`HeroVisual.tsx`).
-  Setelah foto masuk, geser nilainya sampai canvas pas di layar foto.
+- **Monitor 3D interaktif.** Sedang dibahas: mengganti layar CRT di foto dengan
+  monitor 3D yang mengikuti arah kursor.
 - **Animasi halaman.** Entrance headline dan form masih baseline sederhana;
-  motion pass belum dikerjakan. Mark 3D-nya sendiri sudah beranimasi.
-- **Logo 2D masih aproksimasi.** `components/brand/Logo.tsx` digambar dari comp,
-  bukan aset resmi. Ganti dengan SVG asli saat tersedia.
+  motion pass belum dikerjakan.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
 - `robots` masih `noindex` di `app/layout.tsx` — lepas saat siap publik.
