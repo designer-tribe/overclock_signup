@@ -6,6 +6,10 @@ sesi 1-on-1.
 Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
 kiri, intro + form di kanan. Semua aset brand (logo, foto portrait) sudah aslinya.
 
+Monitor pada foto mengikuti arah kursor — fotonya dipecah jadi dua layer
+(monitor / badan) lalu layer monitor dirotasi pakai CSS perspective. Lihat
+`components/hero/HeroVisual.tsx`.
+
 Tidak ada WebGL yang ter-mount saat ini. Paketnya tetap terpasang untuk pekerjaan
 3D berikutnya.
 
@@ -46,7 +50,8 @@ app/
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Foto portrait (next/image, static import)
+  hero/HeroVisual.tsx Foto portrait 2 layer + rotasi monitor mengikuti kursor
+assets/             Layer foto (tidak di-serve mentah; dipakai lewat static import)
   brand/Logo.tsx      Lockup Overclock (aproksimasi)
   form/               SignupForm · Field
 providers/
@@ -90,8 +95,6 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 ## Yang belum dikerjakan
 
-- **Monitor 3D interaktif.** Sedang dibahas: mengganti layar CRT di foto dengan
-  monitor 3D yang mengikuti arah kursor.
 - **Animasi halaman.** Entrance headline dan form masih baseline sederhana;
   motion pass belum dikerjakan.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
