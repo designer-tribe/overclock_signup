@@ -1,31 +1,53 @@
-import { HeroCanvas } from "@/components/hero/HeroCanvas";
+import { Logo } from "@/components/brand/Logo";
 import { HeroCopy } from "@/components/hero/HeroCopy";
+import { HeroVisual } from "@/components/hero/HeroVisual";
 import { SignupForm } from "@/components/form/SignupForm";
 
+/**
+ * The page is one section, laid out as two columns on desktop:
+ * headline over portrait on the left, intro over form on the right.
+ *
+ * On narrow screens it collapses to a single column in reading order —
+ * headline, intro, portrait, form — which puts the form last, where someone
+ * scrolling has read the pitch before being asked for details.
+ *
+ * The WebGL pieces under components/hero (HeroCanvas, HeroScene, Backdrop) are
+ * intentionally not mounted yet: the design is a light, flat page, so the
+ * full-bleed shader backdrop they draw does not belong here. They stay in the
+ * repo as the starting point for the 3D mark that goes inside the CRT screen.
+ */
 export default function Page() {
   return (
-    <main className="relative isolate flex min-h-dvh w-full items-center overflow-hidden bg-[#0a0a12]">
-      {/* Fallback wash — visible before the canvas mounts, and instead of it. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(130%_100%_at_15%_15%,#1d2b64_0%,#0a0a12_55%,#0a0a12_100%)]"
-      />
+    <main className="min-h-dvh bg-paper">
+      <div className="mx-auto w-full max-w-[1500px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+        <div className="grid items-start gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
+          {/* Left column — order on mobile puts the portrait after the intro. */}
+          <HeroCopy className="lg:col-start-1" />
 
-      {/* Loaded client-side only: <Canvas> reaches for `document`. The gradient
-          above is not a spinner — it is the permanent fallback for devices
-          without WebGL, which the shader simply draws over when it can. */}
-      <HeroCanvas />
+          {/*
+            Right column header: intro copy with the lockup pinned right.
+            The lockup comes first in the DOM so that on narrow screens, where
+            this stacks, it reads as a header above the copy rather than being
+            stranded below it; `order` puts it back on the right from sm up.
+          */}
+          <div className="flex flex-col items-start gap-8 sm:flex-row sm:justify-between lg:col-start-2 lg:row-start-1">
+            <Logo className="shrink-0 sm:order-2" />
 
-      {/* Scrim: the shader animates, so copy contrast has to be guaranteed
-          rather than hoped for at whatever the noise field happens to be. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-[#0a0a12]/85 via-[#0a0a12]/40 to-[#0a0a12]/70"
-      />
+            <div className="max-w-sm sm:order-1">
+              <p className="font-sans text-[0.8rem] font-bold tracking-[0.06em] text-teal italic uppercase">
+                You&rsquo;ve seen what&rsquo;s possible.
+              </p>
+              <p className="mt-3 text-[1.05rem] leading-relaxed text-ink/85">
+                Now let&rsquo;s map what it means for your people, your teams,
+                and your strategy.
+              </p>
+            </div>
+          </div>
 
-      <div className="relative mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_minmax(380px,0.95fr)] lg:items-center lg:gap-16 lg:py-24">
-        <HeroCopy />
-        <SignupForm />
+          <HeroVisual className="lg:col-start-1 lg:row-start-2" />
+
+          <SignupForm className="lg:col-start-2 lg:row-start-2" />
+        </div>
       </div>
     </main>
   );

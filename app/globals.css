@@ -4,34 +4,31 @@
 @import "lenis/dist/lenis.css";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-lora);
+  --font-sans: var(--font-dm-sans);
 
-  /* Placeholder brand tokens — these three also feed the backdrop shader
-     (components/hero/shaders/backdrop.glsl.ts). Keep them in step when the real
-     palette lands, or the WebGL layer and the DOM will drift apart. */
-  --color-ink: #0a0a12;
-  --color-deep: #1d2b64;
-  --color-ember: #f27a54;
+  /* Sampled from the approved design. `paper` is the page, `sand` the form
+     card — they are close in hue but the card must read as a distinct surface,
+     so do not collapse them into one token. */
+  --color-paper: #f8f6f1;
+  --color-sand: #e9e3d6;
+  --color-ink: #16181a;
+  --color-teal: #0e6b5c;
+  --color-flag: #c8453c;
 }
 
 html {
-  background-color: var(--color-ink);
-  /* The page is one section; anything scroll-linked added later gets smooth
-     anchor behaviour for free, and this is ignored under reduced motion. */
+  background-color: var(--color-paper);
   scroll-behavior: smooth;
 }
 
 body {
-  color: #ededed;
+  color: var(--color-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
-  /* No horizontal scroll: the shader quad and the entrance transforms both
-     briefly extend past the viewport. */
+  /* The entrance transforms briefly extend past the viewport. */
   overflow-x: hidden;
 }
 
-/* GSAP sets `visibility` via autoAlpha, but elements that start hidden do so in
-   markup so there is no flash before the timeline is built. */
 [data-fade] {
   will-change: transform, opacity;
 }
@@ -45,5 +42,72 @@ body {
   [data-fade] {
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+
+/*
+ * Form controls.
+ *
+ * The design uses the underline to carry state: dotted while a field is
+ * untouched and empty, solid black once it is focused or filled. That is two
+ * selectors on one element, which is far easier to follow here than as a stack
+ * of arbitrary Tailwind variants on every input.
+ *
+ * It relies on each control having `placeholder=" "`, so `:placeholder-shown`
+ * reports emptiness. The visible label is the sibling overlay, which lets the
+ * required asterisk be styled — a real `placeholder` attribute is plain text
+ * and could not carry it.
+ */
+@layer components {
+  .field-control {
+    width: 100%;
+    background-color: #fff;
+    padding: 0.95rem 1.1rem;
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: 1rem;
+    color: var(--color-ink);
+    border-bottom: 2px dotted color-mix(in oklab, var(--color-ink) 45%, transparent);
+    outline: none;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .field-control:hover {
+    border-bottom-color: color-mix(in oklab, var(--color-ink) 70%, transparent);
+  }
+
+  .field-control:focus,
+  .field-control:not(:placeholder-shown) {
+    border-bottom-style: solid;
+    border-bottom-color: var(--color-ink);
+  }
+
+  .field-control[aria-invalid="true"] {
+    border-bottom-style: solid;
+    border-bottom-color: var(--color-flag);
+  }
+
+  .field-control:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Sits on top of the control, so it must never swallow a click. */
+  .field-label {
+    position: absolute;
+    top: 0.95rem;
+    left: 1.1rem;
+    pointer-events: none;
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: 1rem;
+    color: color-mix(in oklab, var(--color-ink) 65%, transparent);
+    transition: opacity 150ms ease;
+  }
+
+  /* Hide once there is content — not on focus, so the label stays readable
+     while an empty field is focused. */
+  .field-control:not(:placeholder-shown) ~ .field-label {
+    opacity: 0;
   }
 }

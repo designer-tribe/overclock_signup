@@ -1,45 +1,49 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lora, DM_Sans } from "next/font/google";
 import { SmoothScrollProvider } from "@/providers/SmoothScrollProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/**
+ * Serif carries the headline, the form card title, and every field — in the
+ * design the inputs are set in serif too, which is what keeps the form feeling
+ * like editorial copy rather than a web form.
+ */
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+/** Sans is for supporting copy, the eyebrow, buttons and fine print. */
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Jadwalkan Sesi — Overclock",
+  title: "Lead the change — Overclock",
   description:
-    "Khusus peserta webinar Overclock: jadwalkan sesi 1-on-1 dengan tim kami.",
-  // Placeholder copy; replace along with the final design and OG image.
+    "You've seen what's possible. Now let's map what it means for your people, your teams, and your strategy.",
   openGraph: {
-    title: "Jadwalkan Sesi — Overclock",
+    title: "Lead the change — Overclock",
     description:
-      "Khusus peserta webinar Overclock: jadwalkan sesi 1-on-1 dengan tim kami.",
+      "You've seen what's possible. Now let's map what it means for your people, your teams, and your strategy.",
     type: "website",
   },
+  // Still a work in progress — drop this once the page is ready to be public.
   robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
-  // Matches the page background, so mobile browser chrome blends in instead of
-  // framing the hero with a white bar.
-  themeColor: "#0a0a12",
+  themeColor: "#f8f6f1",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="en"
+      className={`${lora.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <SmoothScrollProvider>{children}</SmoothScrollProvider>

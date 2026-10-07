@@ -22,7 +22,7 @@ import type { SignupRecord } from "@/lib/schema";
  *   GOOGLE_SHEETS_ID=<the id in the spreadsheet URL>
  *   GOOGLE_SERVICE_ACCOUNT_EMAIL=<...@<project>.iam.gserviceaccount.com>
  *   GOOGLE_PRIVATE_KEY=<the private_key field, newlines escaped as \n>
- *   GOOGLE_SHEETS_RANGE=Signups!A:G   (optional, this is the default)
+ *   GOOGLE_SHEETS_RANGE=Signups!A:F   (optional, this is the default)
  */
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -104,12 +104,11 @@ async function getAccessToken(): Promise<string> {
 function toRow(record: SignupRecord): string[] {
   return [
     record.submittedAt,
-    record.name,
+    record.name ?? "",
     record.email,
-    record.company ?? "",
-    record.preferredDate,
-    record.preferredSlot,
-    record.notes ?? "",
+    record.organization ?? "",
+    record.jobTitle ?? "",
+    record.interest ?? "",
   ];
 }
 
@@ -117,7 +116,7 @@ export const sheetsStore: SignupStore = {
   name: "sheets",
   async save(record) {
     const spreadsheetId = requireEnv("GOOGLE_SHEETS_ID");
-    const range = process.env.GOOGLE_SHEETS_RANGE ?? "Signups!A:G";
+    const range = process.env.GOOGLE_SHEETS_RANGE ?? "Signups!A:F";
     const accessToken = await getAccessToken();
 
     const url =

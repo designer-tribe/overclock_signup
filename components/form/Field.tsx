@@ -3,70 +3,71 @@
 import { useId } from "react";
 
 type FieldProps = {
+  /** Visible label text, shown as an overlay inside the control while it is empty. */
   label: string;
+  required?: boolean;
   error?: string;
-  hint?: string;
-  children: (props: { id: string; "aria-invalid": boolean; "aria-describedby"?: string }) => React.ReactNode;
+  /**
+   * Render function, so the generated ids can be handed to the control. A plain
+   * `children` node would mean every caller repeating `useId` and the
+   * `aria-describedby` bookkeeping by hand — which is the part that silently
+   * gets forgotten.
+   */
+  children: (props: {
+    id: string;
+    "aria-invalid": boolean;
+    "aria-describedby"?: string;
+    /** `:placeholder-shown` is what drives the label and underline states. */
+    placeholder: string;
+    className: string;
+  }) => React.ReactNode;
 };
 
 /**
- * Label + control + error, wired for screen readers.
+ * One form field, following the design's label-inside-the-control pattern.
  *
- * The control is passed as a render function so the generated ids can be handed
- * to it. A plain `children` node would mean every caller repeating `useId` and
- * the `aria-describedby` bookkeeping by hand — which is exactly the part that
- * silently gets forgotten.
+ * The visible label is an overlay rather than a `placeholder` attribute, because
+ * the required marker needs to be styled and a placeholder is plain text. A real
+ * `<label>` is still rendered for screen readers — the overlay is `aria-hidden`
+ * so the label is not announced twice.
+ *
+ * Worth knowing: the label disappears once the field has content, which is the
+ * usual cost of this pattern. It is what the design specifies.
  */
-export function Field({ label, error, hint, children }: FieldProps) {
+export function Field({ label, required, error, children }: FieldProps) {
   const id = useId();
   const errorId = `${id}-error`;
-  const hintId = `${id}-hint`;
-
-  const describedBy = [error ? errorId : null, hint ? hintId : null]
-    .filter(Boolean)
-    .join(" ");
 
   return (
-    <div className="group/field">
-      <label
-        htmlFor={id}
-        className="mb-2 block font-mono text-[11px] tracking-[0.18em] text-white/45 uppercase transition-colors duration-200 group-focus-within/field:text-white/80"
-      >
-        {label}
-      </label>
+    <div>
+      <div className="relative">
+        <label htmlFor={id} className="sr-only">
+          {label}
+          {required ? " (required)" : ""}
+        </label>
 
-      {children({
-        id,
-        "aria-invalid": Boolean(error),
-        "aria-describedby": describedBy || undefined,
-      })}
+        {children({
+          id,
+          "aria-invalid": Boolean(error),
+          "aria-describedby": error ? errorId : undefined,
+          // A single space, not "", so the control still counts as
+          // `:placeholder-shown` while empty.
+          placeholder: " ",
+          className: "field-control",
+        })}
 
-      {hint && !error && (
-        <p id={hintId} className="mt-1.5 text-xs text-white/35">
-          {hint}
-        </p>
-      )}
+        <span className="field-label" aria-hidden>
+          {label}
+          {required && <span className="text-flag">*</span>}
+        </span>
+      </div>
 
-      {/* aria-live so an error announced after submit is read out, not just shown. */}
+      {/* role="alert" so an error raised on submit is announced, not just shown. */}
       {error && (
-        <p id={errorId} role="alert" className="mt-1.5 text-xs text-[#ff9b7a]">
+        <p id={errorId} role="alert" className="mt-1.5 text-xs text-flag">
           {error}
         </p>
       )}
     </div>
   );
 }
-
-/**
- * Shared input styling. Exported rather than duplicated per control so the
- * focus treatment stays identical across text inputs, the date picker, and the
- * textarea — a mismatch there is immediately visible.
- */
-export const controlClass =
-  "w-full rounded-lg border border-white/12 bg-white/[0.04] px-3.5 py-2.5 text-[15px] text-white " +
-  "placeholder:text-white/25 outline-none backdrop-blur-sm " +
-  "transition-[border-color,background-color,box-shadow] duration-200 " +
-  "hover:border-white/20 " +
-  "focus:border-white/35 focus:bg-white/[0.07] focus:shadow-[0_0_0_3px_rgba(255,255,255,0.06)] " +
-  "aria-[invalid=true]:border-[#ff9b7a]/60 " +
-  "disabled:cursor-not-allowed disabled:opacity-50";

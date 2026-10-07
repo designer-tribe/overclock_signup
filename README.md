@@ -3,10 +3,13 @@
 Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
-Repo ini saat ini berisi **fondasi stack-nya**, bukan desain final. Hero yang ada
-sekarang adalah placeholder yang sengaja dibuat netral — fungsinya membuktikan
-seluruh stack (WebGL, GSAP, form, Server Action) benar-benar jalan, dan jadi titik
-tempel ketika desain asli masuk.
+Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
+kiri, intro + form di kanan. Dua hal yang masih menunggu:
+
+- **Foto portrait (CRT head) belum ada asetnya** — saat ini placeholder dengan
+  aspect ratio yang benar. Lihat `components/hero/HeroVisual.tsx`.
+- **Animasi dan elemen 3D belum dikerjakan** — yang ada baru entrance sederhana
+  sebagai baseline.
 
 ## Stack
 
@@ -42,10 +45,12 @@ pnpm exec tsc --noEmit
 app/
   page.tsx            Satu-satunya route — single section
   actions.ts          Server Action submitSignup()
-  globals.css         Tailwind + token brand (ikut dipakai shader)
+  globals.css         Token brand + styling field (dotted → solid underline)
 components/
-  hero/               HeroCanvas (batas client) · HeroScene · Backdrop · shader
+  hero/               HeroCanvas · HeroScene · Backdrop · shader — belum dipasang
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
+  hero/HeroVisual.tsx Slot foto portrait (placeholder)
+  brand/Logo.tsx      Lockup Overclock (aproksimasi)
   form/               SignupForm · Field
 providers/
   SmoothScrollProvider.tsx
@@ -88,8 +93,14 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 ## Yang belum dikerjakan
 
-- Desain final (sedang disiapkan — placeholder akan diganti seluruhnya).
-- Copywriting, aset brand, dan daftar field form yang definitif.
-- Proteksi spam. Form ini publik; sebelum live sebaiknya ditambah honeypot
+- **Foto portrait.** Taruh cut-out di `public/hero-portrait.webp`, lalu ikuti
+  instruksi di `components/hero/HeroVisual.tsx`.
+- **Animasi & 3D.** Komponen WebGL (`HeroCanvas`, `HeroScene`, `Backdrop`) masih
+  ada di repo tapi sengaja **tidak dipasang** di halaman — shader full-bleed
+  tidak cocok untuk desain terang ini. Itu titik mulai untuk mark 3D di dalam
+  layar CRT.
+- **Logo masih aproksimasi.** `components/brand/Logo.tsx` digambar dari comp,
+  bukan aset resmi. Ganti dengan SVG asli saat tersedia.
+- **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
 - `robots` masih `noindex` di `app/layout.tsx` — lepas saat siap publik.
