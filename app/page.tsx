@@ -20,9 +20,17 @@ export default function Page() {
   return (
     // overflow-hidden so the portrait can bleed off the bottom edge, as the
     // comp has it, without adding page scroll.
-    <main className="min-h-dvh overflow-hidden bg-paper">
-      <div className="mx-auto w-full max-w-[1500px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
-        <div className="grid items-start gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
+    <main className="flex min-h-dvh flex-col overflow-hidden bg-paper">
+      {/*
+        The flex chain matters: min-h-dvh only stretches `main`. Without
+        flex-1 passed down to the grid, the grid stays content-height and the
+        portrait anchors to the bottom of the content rather than the bottom of
+        the page — which on a tall viewport leaves it visibly floating.
+      */}
+      <div className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+        {/* grid-rows-[auto_1fr]: the second row takes all the leftover height,
+            which is what gives the portrait a box to fill down to the edge. */}
+        <div className="grid flex-1 items-start gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
           {/* Left column — order on mobile puts the portrait after the intro. */}
           <HeroCopy className="lg:col-start-1" />
 
@@ -47,11 +55,12 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Bottom-aligned, and the negative margin cancels the container's
-              bottom padding so the figure reaches the page edge rather than
-              floating above it. Only from lg: in the stacked mobile order the
-              form sits directly below and would be pulled into the image. */}
-          <HeroVisual className="lg:col-start-1 lg:row-start-2 lg:self-end lg:-mb-16" />
+          {/* Stretches to fill the second row, so the figure has a box running
+              all the way to the page edge; the negative margins cancel the
+              container's padding so it reaches that edge rather than stopping
+              inside it. lg-only: in the stacked mobile order the form sits
+              directly below and would be pulled into the image. */}
+          <HeroVisual className="lg:col-start-1 lg:row-start-2 lg:-mb-16 lg:-ml-24 lg:self-stretch" />
 
           <SignupForm className="lg:col-start-2 lg:row-start-2" />
         </div>

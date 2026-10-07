@@ -70,9 +70,25 @@ export function HeroVisual({ className = "" }: { className?: string }) {
   );
 
   return (
-    <div ref={scope} className={className}>
+    <div ref={scope} className={`relative ${className}`}>
+      {/*
+        Below lg this is a normal block in the stacked flow. From lg it fills
+        the stretched grid cell, which runs from the top of the form card to
+        the bottom of the page — so the figure's top sits level with the card
+        and its bottom reaches the edge, at whatever the viewport height.
+
+        `h-full` is the ceiling, not a starting point: the cell top *is* the
+        headline's lower bound, so anything above 100% pushes the monitor up
+        over the headline.
+
+        max-h caps the width that the height implies, since the width follows
+        the aspect ratio. Without it a very tall viewport grows the figure
+        sideways until it reaches the form. 63vw is the height at which the
+        figure's right edge, with the left shift applied, still clears the form
+        column.
+      */}
       <div
-        className="relative mx-auto w-full max-w-[33rem] lg:mx-0 lg:w-[42rem] lg:max-w-none"
+        className="relative mx-auto w-full max-w-[33rem] lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:h-full lg:max-h-[63vw] lg:w-auto lg:max-w-none"
         // Perspective on the shared parent so both layers resolve to one
         // vanishing point. Large value: a short one exaggerates the foreshortening
         // and the monitor starts to look like it is lunging at the cursor.
@@ -87,8 +103,8 @@ export function HeroVisual({ className = "" }: { className?: string }) {
           alt=""
           priority
           placeholder="blur"
-          sizes="(min-width: 1024px) 42rem, (min-width: 640px) 60vw, 90vw"
-          className="h-auto w-full"
+          sizes="(min-width: 1024px) 46rem, (min-width: 640px) 60vw, 90vw"
+          className="h-auto w-full lg:h-full lg:w-auto lg:max-w-none"
         />
 
         <div
@@ -100,7 +116,7 @@ export function HeroVisual({ className = "" }: { className?: string }) {
             src={monitor}
             alt=""
             priority
-            sizes="(min-width: 1024px) 42rem, (min-width: 640px) 60vw, 90vw"
+            sizes="(min-width: 1024px) 46rem, (min-width: 640px) 60vw, 90vw"
             className="h-full w-full"
           />
         </div>
