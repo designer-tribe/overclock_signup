@@ -102,18 +102,24 @@ export function HeroVisual({ className = "" }: { className?: string }) {
         aspect ratio gives the box a size — unlike the image it replaced, a
         video brings no intrinsic one.
 
-        From lg the box fills the stretched grid cell instead, which runs from
+        From lg the box is pinned to the stretched grid cell, which runs from
         the top of the form card to the bottom of the page, and takes its width
-        from the viewport. Filling the cell is what guarantees no gap at the
-        bottom at any viewport height. The aspect ratio is dropped there on
-        purpose, so the box can be wider than the clip — that mismatch is what
-        makes `object-cover` crop the figure at the waist.
+        from the viewport. The aspect ratio is dropped there on purpose, so the
+        box can be wider than the clip — that mismatch is what makes
+        `object-cover` crop the figure at the waist.
+
+        The -10%/110% pair raises the figure without lifting it off the bottom
+        edge: the top moves up a tenth of the cell and the height grows by the
+        same tenth, so the lower edge stays exactly where it was. Shifting with
+        a plain translate would drag the crop line up into view as a hard
+        horizontal cut across the torso.
 
         Width is in vw rather than a fixed size because the form column also
         begins at roughly half the viewport, so anything absolute drifts into
-        the card as the window narrows.
+        the card as the window narrows. The horizontal shift is a translate
+        rather than a negative offset so it scales with that width.
       */}
-      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:inset-y-0 lg:left-0 lg:mx-0 lg:aspect-auto lg:h-full lg:w-[52vw] lg:max-w-none">
+      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:top-[-10%] lg:left-0 lg:mx-0 lg:aspect-auto lg:h-[110%] lg:w-[52vw] lg:max-w-none lg:-translate-x-[20%]">
         {/*
           preload="auto" on purpose: the whole clip has to be buffered before
           scrubbing feels instant, and a hero the visitor will immediately play

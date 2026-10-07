@@ -32,7 +32,11 @@ export default function Page() {
             which is what gives the portrait a box to fill down to the edge. */}
         <div className="grid flex-1 items-start gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
           {/* Left column — order on mobile puts the portrait after the intro. */}
-          <HeroCopy className="lg:col-start-1" />
+          {/* Above the video: the figure now reaches up into this row, and its
+              backdrop is opaque, so without this it paints over the headline.
+              Only the empty part of the frame overlaps the text — the monitor
+              itself sits below it. */}
+          <HeroCopy className="relative z-10 lg:col-start-1" />
 
           {/*
             Right column header: intro copy with the lockup pinned right.
