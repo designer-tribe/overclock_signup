@@ -18,7 +18,9 @@ import { SignupForm } from "@/components/form/SignupForm";
  */
 export default function Page() {
   return (
-    <main className="min-h-dvh bg-paper">
+    // overflow-hidden so the portrait can bleed off the bottom edge, as the
+    // comp has it, without adding page scroll.
+    <main className="min-h-dvh overflow-hidden bg-paper">
       <div className="mx-auto w-full max-w-[1500px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
         <div className="grid items-start gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
           {/* Left column — order on mobile puts the portrait after the intro. */}
@@ -45,7 +47,11 @@ export default function Page() {
             </div>
           </div>
 
-          <HeroVisual className="lg:col-start-1 lg:row-start-2" />
+          {/* Bottom-aligned, and the negative margin cancels the container's
+              bottom padding so the figure reaches the page edge rather than
+              floating above it. Only from lg: in the stacked mobile order the
+              form sits directly below and would be pulled into the image. */}
+          <HeroVisual className="lg:col-start-1 lg:row-start-2 lg:self-end lg:-mb-16" />
 
           <SignupForm className="lg:col-start-2 lg:row-start-2" />
         </div>
