@@ -1,36 +1,61 @@
+import { MarkCanvas } from "./mark/MarkCanvas";
+
 /**
- * The left-hand visual: the CRT-head portrait from the design.
+ * The left-hand visual: the CRT-head portrait, with the Overclock mark rendered
+ * live in 3D inside the screen.
  *
- * The photograph has not been supplied yet, so this renders a placeholder at
- * the comp's aspect ratio. That keeps the page's proportions honest — the
- * surrounding layout will not shift when the real asset drops in.
+ * The photograph has not been supplied yet, so the surrounding frame is a
+ * placeholder at the comp's aspect ratio. That keeps the page's proportions
+ * honest — the layout will not shift when the real asset drops in.
  *
  * To swap in the photo:
  *   1. Put the cut-out (transparent PNG or WebP) at `public/hero-portrait.webp`.
- *   2. Replace the placeholder block below with:
+ *   2. Replace the dashed placeholder frame with:
  *
  *        import Image from "next/image";
  *        import portrait from "@/public/hero-portrait.webp";
  *        ...
- *        <Image src={portrait} alt="" priority className="h-full w-full object-contain object-bottom" />
+ *        <Image src={portrait} alt="" priority className="..." />
  *
  *      A static import lets Next read the intrinsic size, so there is no layout
  *      shift and no width/height to keep in sync by hand.
+ *   3. Nudge SCREEN_RECT below until the canvas lines up with the screen in the
+ *      photo, and raise the canvas above the image in the stacking order.
  *
- * The screen cut-out is marked separately because that is where the 3D mark is
- * meant to sit — see the note on that element.
+ * The screen rectangle is kept as named constants rather than inline classes
+ * because step 3 is a fiddly, repeated adjustment, and it should be obvious
+ * where to make it.
  */
+const SCREEN_RECT = {
+  top: "14%",
+  width: "58%",
+  /** The glass is roughly 4:3, as a CRT of that era would be. */
+  aspect: "4 / 3",
+} as const;
+
 export function HeroVisual({ className = "" }: { className?: string }) {
   return (
     <div className={className}>
       <div className="relative mx-auto aspect-[2/3] w-full max-w-[27rem] border border-dashed border-ink/25 lg:mx-0">
-        {/*
-          Stand-in for the CRT screen. Positioned to match where the screen sits
-          in the comp, so the composition reads correctly before the photo
-          arrives — and so the 3D canvas has a known box to mount into once we
-          have settled what goes in it.
-        */}
-        <div className="absolute top-[14%] left-1/2 aspect-[4/3] w-[58%] -translate-x-1/2 border border-dashed border-ink/30 bg-ink/[0.04]" />
+        {/* The CRT screen: dark glass with the mark rendered into it. */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 overflow-hidden bg-[#0c0f0e]"
+          style={{
+            top: SCREEN_RECT.top,
+            width: SCREEN_RECT.width,
+            aspectRatio: SCREEN_RECT.aspect,
+            // CRT glass is not a flat rectangle — the corners are pulled in.
+            borderRadius: "14% / 18%",
+          }}
+        >
+          <MarkCanvas />
+
+          {/* Specular sheen across the glass, above the canvas. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.03)_28%,transparent_55%)]"
+          />
+        </div>
 
         <p className="absolute inset-x-0 bottom-6 px-6 text-center font-sans text-xs leading-relaxed text-ink/40">
           Portrait asset pending

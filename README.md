@@ -4,12 +4,11 @@ Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
 Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
-kiri, intro + form di kanan. Dua hal yang masih menunggu:
+kiri, intro + form di kanan. Mark Overclock di dalam layar CRT dirender live
+sebagai objek 3D (`components/hero/mark/`).
 
-- **Foto portrait (CRT head) belum ada asetnya** — saat ini placeholder dengan
-  aspect ratio yang benar. Lihat `components/hero/HeroVisual.tsx`.
-- **Animasi dan elemen 3D belum dikerjakan** — yang ada baru entrance sederhana
-  sebagai baseline.
+Yang masih menunggu: **foto portrait (CRT head) belum ada asetnya** — saat ini
+placeholder dengan aspect ratio yang benar. Lihat `components/hero/HeroVisual.tsx`.
 
 ## Stack
 
@@ -47,9 +46,9 @@ app/
   actions.ts          Server Action submitSignup()
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
-  hero/               HeroCanvas · HeroScene · Backdrop · shader — belum dipasang
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Slot foto portrait (placeholder)
+  hero/HeroVisual.tsx Frame portrait + layar CRT tempat mark 3D dipasang
+  hero/mark/          Mark 3D: geometri, scene, post-processing CRT
   brand/Logo.tsx      Lockup Overclock (aproksimasi)
   form/               SignupForm · Field
 providers/
@@ -95,11 +94,11 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 - **Foto portrait.** Taruh cut-out di `public/hero-portrait.webp`, lalu ikuti
   instruksi di `components/hero/HeroVisual.tsx`.
-- **Animasi & 3D.** Komponen WebGL (`HeroCanvas`, `HeroScene`, `Backdrop`) masih
-  ada di repo tapi sengaja **tidak dipasang** di halaman — shader full-bleed
-  tidak cocok untuk desain terang ini. Itu titik mulai untuk mark 3D di dalam
-  layar CRT.
-- **Logo masih aproksimasi.** `components/brand/Logo.tsx` digambar dari comp,
+- **Posisi mark 3D.** Rect layar CRT ada di `SCREEN_RECT` (`HeroVisual.tsx`).
+  Setelah foto masuk, geser nilainya sampai canvas pas di layar foto.
+- **Animasi halaman.** Entrance headline dan form masih baseline sederhana;
+  motion pass belum dikerjakan. Mark 3D-nya sendiri sudah beranimasi.
+- **Logo 2D masih aproksimasi.** `components/brand/Logo.tsx` digambar dari comp,
   bukan aset resmi. Ganti dengan SVG asli saat tersedia.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
