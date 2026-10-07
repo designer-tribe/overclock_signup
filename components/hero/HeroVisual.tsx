@@ -119,7 +119,7 @@ export function HeroVisual({ className = "" }: { className?: string }) {
         the card as the window narrows. The horizontal shift is a translate
         rather than a negative offset so it scales with that width.
       */}
-      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:top-[-10%] lg:left-0 lg:mx-0 lg:aspect-auto lg:h-[110%] lg:w-[52vw] lg:max-w-none lg:-translate-x-[20%]">
+      <div className="relative mx-auto aspect-[986/1200] w-full max-w-[33rem] lg:absolute lg:top-[-10%] lg:left-0 lg:mx-0 lg:aspect-auto lg:h-[110%] lg:w-[52vw] lg:max-w-none lg:-translate-x-[10%]">
         {/*
           preload="auto" on purpose: the whole clip has to be buffered before
           scrubbing feels instant, and a hero the visitor will immediately play
