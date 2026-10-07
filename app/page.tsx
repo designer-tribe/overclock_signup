@@ -31,7 +31,8 @@ export default function Page() {
             stranded below it; `order` puts it back on the right from sm up.
           */}
           <div className="flex flex-col items-start gap-8 sm:flex-row sm:justify-between lg:col-start-2 lg:row-start-1">
-            <Logo className="shrink-0 sm:order-2" />
+            {/* Height only — the lockup's viewBox carries its own aspect ratio. */}
+            <Logo className="h-8 shrink-0 sm:order-2" />
 
             <div className="max-w-sm sm:order-1">
               <p className="font-sans text-[0.8rem] font-bold tracking-[0.06em] text-teal italic uppercase">
