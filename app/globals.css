@@ -4,8 +4,9 @@
 @import "lenis/dist/lenis.css";
 
 @theme inline {
-  --font-serif: var(--font-lora);
-  --font-sans: var(--font-dm-sans);
+  /* Petrona carries titles and form controls; Inter carries body copy. */
+  --font-serif: var(--font-petrona);
+  --font-sans: var(--font-inter);
 
   /* Sampled from the approved design. `paper` is the page, `sand` the form
      card — they are close in hue but the card must read as a distinct surface,

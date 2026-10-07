@@ -1,22 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Lora, DM_Sans } from "next/font/google";
+import { Petrona, Inter } from "next/font/google";
 import { SmoothScrollProvider } from "@/providers/SmoothScrollProvider";
 import "./globals.css";
 
 /**
- * Serif carries the headline, the form card title, and every field — in the
- * design the inputs are set in serif too, which is what keeps the form feeling
- * like editorial copy rather than a web form.
+ * Titles: the headline, the form card title, and every form control — in the
+ * design the inputs are set in the serif too, which is what keeps the form
+ * feeling like editorial copy rather than a web form.
+ *
+ * Italic is loaded because the headline's "Lead the change." needs a true
+ * italic; without it the browser would synthesise one by slanting the roman,
+ * which at display size is obvious and ugly.
  */
-const lora = Lora({
-  variable: "--font-lora",
+const petrona = Petrona({
+  variable: "--font-petrona",
   subsets: ["latin"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-/** Sans is for supporting copy, the eyebrow, buttons and fine print. */
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+/** Body: supporting copy, the eyebrow, buttons, fine print and error messages. */
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -43,7 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${lora.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${petrona.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
