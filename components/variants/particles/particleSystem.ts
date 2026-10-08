@@ -38,30 +38,23 @@ const MARK_COUNT = 7200;
 const DRIFT_COUNT = 900;
 const TOTAL = MARK_COUNT + DRIFT_COUNT;
 
-/**
- * How much of the frame's shorter side the mark fills.
- *
- * Sized from the viewport rather than fixed in world units: the column is tall
- * and narrow on desktop but wide and short on a phone, and one constant that
- * looks right in the first is clipped at the sides in the second.
- */
-const MARK_FILL = 0.82;
+/*
+  The mark's size and position are not constants: they are handed in every frame
+  from a measured element in the page, because the canvas covers the whole
+  viewport while the mark belongs in one column of it. See `ParticleMark`.
+*/
 
-/** The mark's size in world units, for whatever frame it is being drawn in. */
-function markScaleFor(halfWidth: number, halfHeight: number): number {
-  return Math.min(halfWidth, halfHeight) * 2 * MARK_FILL;
-}
 /** Thickness in Z. Thin on purpose: a deep cloud stops reading as the logo. */
 const DEPTH = 0.1;
 /** How far mark particles start from home, so the logo assembles on load. */
 const SCATTER = 3.4;
 
 /**
- * Drifters enter from just outside the visible frame, not from a ring of fixed
- * radius around the mark. A ring is a shape, and once it falls inside the frame
- * — which it does on any wide viewport — you can see it: particles blink into
- * existence along an invisible circle in mid-air. Coming in past the edges
- * reads as traffic arriving from somewhere, which is the point of them.
+ * Drifters enter from just outside the edges of the whole page, not from a ring
+ * of fixed radius around the mark and not from the bounds of some box the mark
+ * sits in. Either of those is a shape, and a shape inside the frame is one you
+ * can see: particles blinking into existence along an invisible line in mid-air.
+ * Coming in past the page's own edges reads as traffic arriving from somewhere.
  */
 const SPAWN_MARGIN = 0.4;
 /** Past this much outside the frame a stray is recycled rather than chased. */
@@ -142,6 +135,14 @@ export type ParticleSystem = {
   /** Half-extents of the visible frame at z=0, refreshed each step. */
   halfWidth: number;
   halfHeight: number;
+  /**
+   * Where the mark sits and how big it is, in world units. Set from a measured
+   * element in the page before each step — the canvas is the whole viewport,
+   * but the mark belongs in one column of it.
+   */
+  centreX: number;
+  centreY: number;
+  scale: number;
   /** Whether the eased cursor has a position yet, or must snap to its first. */
   pointerPrimed: boolean;
   /** Reused every step rather than allocated — see the note above. */
@@ -166,6 +167,9 @@ export function createParticleSystem(
   dpr: number,
   halfWidth: number,
   halfHeight: number,
+  centreX: number,
+  centreY: number,
+  scale: number,
 ): ParticleSystem {
   const homes = new Float32Array(TOTAL * 3);
   const positions = new Float32Array(TOTAL * 3);
@@ -178,7 +182,6 @@ export function createParticleSystem(
   const markHomes = sampleMarkPoints(MARK_COUNT, DEPTH);
   const colour = new THREE.Color();
   const scatter = animated ? SCATTER : 0;
-  const scale = markScaleFor(halfWidth, halfHeight);
 
   for (let i = 0; i < TOTAL; i++) {
     const ix = i * 3;
@@ -191,8 +194,10 @@ export function createParticleSystem(
       homes[ix] = markHomes[ix];
       homes[ix + 1] = markHomes[ix + 1];
       homes[ix + 2] = markHomes[ix + 2];
-      positions[ix] = homes[ix] * scale + (Math.random() - 0.5) * scatter;
-      positions[ix + 1] = homes[ix + 1] * scale + (Math.random() - 0.5) * scatter;
+      positions[ix] =
+        centreX + homes[ix] * scale + (Math.random() - 0.5) * scatter;
+      positions[ix + 1] =
+        centreY + homes[ix + 1] * scale + (Math.random() - 0.5) * scatter;
       positions[ix + 2] = homes[ix + 2] * scale + (Math.random() - 0.5) * scatter;
     } else {
       // Drifters have no home; they are steered toward the mark instead.
@@ -251,6 +256,9 @@ export function createParticleSystem(
     disturb,
     halfWidth,
     halfHeight,
+    centreX,
+    centreY,
+    scale,
     pointerPrimed: false,
     scratch: {
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
@@ -336,7 +344,7 @@ export function stepParticleSystem(
   const disturbKept = Math.exp(-DISTURB_DECAY * dt);
   const cullX = halfWidth + CULL_MARGIN;
   const cullY = halfHeight + CULL_MARGIN;
-  const scale = markScaleFor(halfWidth, halfHeight);
+  const { centreX, centreY, scale } = system;
   const absorbRadius = scale * ABSORB_FRACTION;
 
   for (let i = 0; i < TOTAL; i++) {
@@ -359,12 +367,12 @@ export function stepParticleSystem(
       const spring = SPRING * (1 - SPRING_RELEASE * loose);
       const hx = homes[ix] * scale;
       const hz = homes[iz] * scale;
-      ax = (hx * cos + hz * sin - positions[ix]) * spring;
-      ay = (homes[iy] * scale - positions[iy]) * spring;
+      ax = (centreX + hx * cos + hz * sin - positions[ix]) * spring;
+      ay = (centreY + homes[iy] * scale - positions[iy]) * spring;
       az = (hz * cos - hx * sin - positions[iz]) * spring;
     } else {
-      const dx = -positions[ix];
-      const dy = -positions[iy];
+      const dx = centreX - positions[ix];
+      const dy = centreY - positions[iy];
       const dz = -positions[iz];
       const dist = Math.hypot(dx, dy, dz) || 1;
 

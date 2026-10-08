@@ -142,12 +142,22 @@ Tiga hal yang memakan waktu dan gampang terulang:
    jadi segaris. Ayunan ±31° tetap memberi kesan 3D tanpa pernah kehilangan
    bentuknya.
 
-Partikel ambient masuk dari **tepi frame**, bukan dari lingkaran berjari-jari
-tetap. Lingkaran itu sebuah bentuk — begitu masuk ke dalam frame (dan pasti
-masuk di viewport lebar), kelihatan: partikelnya muncul begitu saja di udara
-mengikuti garis lingkaran tak terlihat. Ukuran marknya juga dihitung dari sisi
-terpendek frame, bukan angka tetap, supaya tidak terpotong di kotak yang lebar-
-pendek seperti di mobile.
+**Canvas-nya satu halaman penuh** (`fixed inset-0`, di belakang konten), bukan
+sebesar kolom tempat marknya. Ini bukan detail: partikel harus datang dari suatu
+tempat, dan kalau canvas-nya hanya sebesar kolom, tepi kolom itulah yang jadi
+tempat mereka muncul — terlihat sebagai kotak berisi partikel yang menyembur
+dari sisi-sisinya. Spawn-nya juga dari luar tepi halaman, bukan dari lingkaran
+berjari-jari tetap: lingkaran itu sebuah bentuk, dan bentuk di dalam frame itu
+kelihatan.
+
+Karena canvas-nya seluas halaman, posisi dan ukuran marknya diukur dari sebuah
+**elemen jangkar** kosong di grid kolom kiri (ResizeObserver + listener scroll,
+bukan `getBoundingClientRect` tiap frame — itu memaksa reflow 60x per detik).
+Jadi logonya mengikuti layout, bukan menyimpan salinan breakpoint-nya sendiri.
+
+Canvas-nya `pointer-events-none` supaya form tetap bisa diklik; r3f dipasangi
+`eventSource={document.body}` + `eventPrefix="client"` supaya kursor tetap
+sampai ke marknya dari mana pun di halaman.
 
 Yang berputar adalah **posisi tujuan** partikelnya, bukan group-nya. Kursor
 mendorong partikel di world space; kalau group-nya yang diputar, tiap frame
