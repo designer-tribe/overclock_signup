@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useStore, useThree } from "@react-three/fiber";
 import {
   createParticleSystem,
   disposeParticleSystem,
@@ -30,6 +30,9 @@ export function ParticleMark({
   const scene = useThree((state) => state.scene);
   const gl = useThree((state) => state.gl);
   const dpr = useThree((state) => state.viewport.dpr);
+  // The store rather than a selector: the viewport is only needed once, to seed
+  // the spawn edges. Subscribing to it would rebuild the whole cloud on resize.
+  const store = useStore();
   const systemRef = useRef<ParticleSystem | null>(null);
   const hasPointer = useRef(false);
 
@@ -39,7 +42,13 @@ export function ParticleMark({
   const animated = intensity > 0;
 
   useEffect(() => {
-    const system = createParticleSystem(animated, dpr);
+    const { viewport } = store.getState();
+    const system = createParticleSystem(
+      animated,
+      dpr,
+      viewport.width / 2,
+      viewport.height / 2,
+    );
     systemRef.current = system;
     scene.add(system.points);
 
@@ -48,10 +57,11 @@ export function ParticleMark({
       disposeParticleSystem(system);
       systemRef.current = null;
     };
-    // dpr is read once here and kept current by the effect below, so that
-    // moving a window between displays does not rebuild the whole cloud.
+    // dpr and the viewport are read once here and kept current by the effect
+    // below and by each step, so that moving a window between displays or
+    // resizing it does not rebuild the whole cloud.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scene, animated]);
+  }, [scene, store, animated]);
 
   useEffect(() => {
     const system = systemRef.current;
@@ -92,6 +102,8 @@ export function ParticleMark({
       state.camera,
       state.pointer,
       hasPointer.current,
+      state.viewport.width,
+      state.viewport.height,
       state.clock.elapsedTime,
       delta,
       intensity,

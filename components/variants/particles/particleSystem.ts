@@ -34,27 +34,45 @@ import { sampleMarkPoints } from "./markPoints";
   loop below is a few thousand iterations of arithmetic, which costs nothing
   next to the fill rate.
 */
-const MARK_COUNT = 5200;
-const DRIFT_COUNT = 600;
+const MARK_COUNT = 7200;
+const DRIFT_COUNT = 900;
 const TOTAL = MARK_COUNT + DRIFT_COUNT;
 
-/** The mark is sampled into a unit box, so this is its size in world units. */
-const MARK_SCALE = 3;
+/**
+ * How much of the frame's shorter side the mark fills.
+ *
+ * Sized from the viewport rather than fixed in world units: the column is tall
+ * and narrow on desktop but wide and short on a phone, and one constant that
+ * looks right in the first is clipped at the sides in the second.
+ */
+const MARK_FILL = 0.82;
+
+/** The mark's size in world units, for whatever frame it is being drawn in. */
+function markScaleFor(halfWidth: number, halfHeight: number): number {
+  return Math.min(halfWidth, halfHeight) * 2 * MARK_FILL;
+}
 /** Thickness in Z. Thin on purpose: a deep cloud stops reading as the logo. */
 const DEPTH = 0.1;
 /** How far mark particles start from home, so the logo assembles on load. */
 const SCATTER = 3.4;
 
-/** Where drifting particles live and respawn, in world units from the centre. */
-const SPAWN_MIN = 2.8;
-const SPAWN_MAX = 4.2;
 /**
- * Inside this, a drifter has arrived and is sent back out. Set to just inside
- * the ring rather than to the centre: the middle of this mark is the counter,
- * so absorbing at the origin would send a stream straight through the logo and
- * fill the one part of it that has to stay empty.
+ * Drifters enter from just outside the visible frame, not from a ring of fixed
+ * radius around the mark. A ring is a shape, and once it falls inside the frame
+ * — which it does on any wide viewport — you can see it: particles blink into
+ * existence along an invisible circle in mid-air. Coming in past the edges
+ * reads as traffic arriving from somewhere, which is the point of them.
  */
-const ABSORB_RADIUS = MARK_SCALE * 0.47;
+const SPAWN_MARGIN = 0.4;
+/** Past this much outside the frame a stray is recycled rather than chased. */
+const CULL_MARGIN = 1.6;
+/**
+ * Where a drifter counts as arrived, as a fraction of the mark's size. Set to
+ * just inside the ring rather than to the centre: the middle of this mark is
+ * the counter, so absorbing at the origin would send a stream straight through
+ * the logo and fill the one part of it that has to stay empty.
+ */
+const ABSORB_FRACTION = 0.47;
 
 /*
   The mark turns as a slow swing rather than a full revolution. It is a flat
@@ -65,15 +83,42 @@ const ABSORB_RADIUS = MARK_SCALE * 0.47;
 */
 const ROTATION_SPEED = 0.16; // rad/s through the swing
 const ROTATION_SWING = 0.55; // radians either side of front-on, about 31°
-const SPRING = 9;
-const DAMPING = 4.2;
+
+/*
+  Underdamped on purpose (ζ ≈ 0.5). A critically damped spring walks each
+  particle back to its home along a straight line and parks it, which is what
+  made the first version snap shut the moment the cursor left. This one
+  overshoots and settles, so a broken mark drifts back together.
+*/
+const SPRING = 6;
+const DAMPING = 2.4;
 /** Pull toward the mark, and the tangential component that curves the path. */
 const DRIFT_PULL = 0.85;
 const DRIFT_SWIRL = 0.5;
 
 /** Cursor influence: how far it reaches, and how hard it shoves. */
-const CURSOR_RADIUS = 1.15;
-const CURSOR_FORCE = 40;
+const CURSOR_RADIUS = 1.3;
+const CURSOR_FORCE = 34;
+
+/*
+  Nothing in this scene is ever completely still.
+
+  `WANDER_IDLE` is a constant per-particle sway, small enough that the formed
+  mark only shimmers. `WANDER_BURST` is added on top in proportion to how
+  recently a particle was hit by the cursor, and `SPRING_RELEASE` slackens that
+  particle's spring by the same measure — so a scattered particle floats for a
+  while under its own momentum before the pull home wins. `DISTURB_DECAY` is how
+  fast that memory fades: at 0.55/s a particle is still visibly loose a couple
+  of seconds after the cursor has gone.
+*/
+const WANDER_FREQ = 0.9;
+const WANDER_IDLE = 0.22;
+const WANDER_BURST = 3.2;
+const SPRING_RELEASE = 0.82;
+const DISTURB_DECAY = 0.55;
+
+/** How fast the cursor's own position catches up, per second. */
+const POINTER_EASE = 11;
 
 /*
   Mirrors --color-cream and --color-teal-light in globals.css. WebGL cannot read
@@ -90,11 +135,22 @@ export type ParticleSystem = {
   homes: Float32Array;
   positions: Float32Array;
   velocities: Float32Array;
+  /** Per-particle phase offset, so the idle sway is not one synchronised pulse. */
+  phases: Float32Array;
+  /** How recently the cursor hit each particle, 1 down to 0. */
+  disturb: Float32Array;
+  /** Half-extents of the visible frame at z=0, refreshed each step. */
+  halfWidth: number;
+  halfHeight: number;
+  /** Whether the eased cursor has a position yet, or must snap to its first. */
+  pointerPrimed: boolean;
   /** Reused every step rather than allocated — see the note above. */
   scratch: {
     plane: THREE.Plane;
     ray: THREE.Raycaster;
     pointer: THREE.Vector3;
+    /** The cursor, eased — raw pointer jumps would crack the mark open. */
+    easedPointer: THREE.Vector3;
   };
 };
 
@@ -108,32 +164,46 @@ export type ParticleSystem = {
 export function createParticleSystem(
   animated: boolean,
   dpr: number,
+  halfWidth: number,
+  halfHeight: number,
 ): ParticleSystem {
   const homes = new Float32Array(TOTAL * 3);
   const positions = new Float32Array(TOTAL * 3);
   const velocities = new Float32Array(TOTAL * 3);
   const colors = new Float32Array(TOTAL * 3);
   const sizes = new Float32Array(TOTAL);
+  const phases = new Float32Array(TOTAL);
+  const disturb = new Float32Array(TOTAL);
 
   const markHomes = sampleMarkPoints(MARK_COUNT, DEPTH);
   const colour = new THREE.Color();
   const scatter = animated ? SCATTER : 0;
+  const scale = markScaleFor(halfWidth, halfHeight);
 
   for (let i = 0; i < TOTAL; i++) {
     const ix = i * 3;
     const isMark = i < MARK_COUNT;
 
     if (isMark) {
-      homes[ix] = markHomes[ix] * MARK_SCALE;
-      homes[ix + 1] = markHomes[ix + 1] * MARK_SCALE;
-      homes[ix + 2] = markHomes[ix + 2] * MARK_SCALE;
-      positions[ix] = homes[ix] + (Math.random() - 0.5) * scatter;
-      positions[ix + 1] = homes[ix + 1] + (Math.random() - 0.5) * scatter;
-      positions[ix + 2] = homes[ix + 2] + (Math.random() - 0.5) * scatter;
+      // Homes stay in the unit box the sampler produced; the step scales them
+      // to whatever frame is current, so a resize moves the mark rather than
+      // needing the whole cloud rebuilt.
+      homes[ix] = markHomes[ix];
+      homes[ix + 1] = markHomes[ix + 1];
+      homes[ix + 2] = markHomes[ix + 2];
+      positions[ix] = homes[ix] * scale + (Math.random() - 0.5) * scatter;
+      positions[ix + 1] = homes[ix + 1] * scale + (Math.random() - 0.5) * scatter;
+      positions[ix + 2] = homes[ix + 2] * scale + (Math.random() - 0.5) * scatter;
     } else {
       // Drifters have no home; they are steered toward the mark instead.
-      spawnDrifter(positions, ix);
+      spawnDrifter(positions, ix, halfWidth, halfHeight);
+      // Spread the first arrivals through their journey rather than releasing
+      // the whole pool from the edges at once, which reads as a single wave.
+      positions[ix] *= 0.2 + Math.random() * 0.8;
+      positions[ix + 1] *= 0.2 + Math.random() * 0.8;
     }
+
+    phases[i] = Math.random() * Math.PI * 2;
 
     colour.copy(Math.random() < TEAL_SHARE ? TEAL : CREAM);
     // The mark sits clearly brighter than the traffic around it. Without the
@@ -177,10 +247,16 @@ export function createParticleSystem(
     homes,
     positions,
     velocities,
+    phases,
+    disturb,
+    halfWidth,
+    halfHeight,
+    pointerPrimed: false,
     scratch: {
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       ray: new THREE.Raycaster(),
       pointer: new THREE.Vector3(),
+      easedPointer: new THREE.Vector3(),
     },
   };
 }
@@ -208,15 +284,24 @@ export function stepParticleSystem(
   camera: THREE.Camera,
   ndc: THREE.Vector2,
   hasPointer: boolean,
+  viewportWidth: number,
+  viewportHeight: number,
   elapsed: number,
   delta: number,
   intensity: number,
 ): void {
-  const { homes, positions, velocities, scratch } = system;
+  const { homes, positions, velocities, phases, disturb, scratch } = system;
 
   // Clamp the step: a backgrounded tab resumes with a delta of seconds, and one
   // integration over that would fling every particle out of frame.
   const dt = Math.min(delta, 1 / 30);
+
+  // Kept current rather than captured once, so a resize moves where particles
+  // enter instead of leaving them streaming in from an edge that has moved.
+  const halfWidth = viewportWidth / 2;
+  const halfHeight = viewportHeight / 2;
+  system.halfWidth = halfWidth;
+  system.halfHeight = halfHeight;
 
   const angle = Math.sin(elapsed * ROTATION_SPEED) * ROTATION_SWING * intensity;
   const cos = Math.cos(angle);
@@ -229,11 +314,30 @@ export function stepParticleSystem(
     cursorActive =
       scratch.ray.ray.intersectPlane(scratch.plane, scratch.pointer) !== null;
   }
-  const px = scratch.pointer.x;
-  const py = scratch.pointer.y;
+
+  if (cursorActive) {
+    if (system.pointerPrimed) {
+      // Exponential ease, framed in dt so the feel does not change with the
+      // frame rate. A raw pointer position would jump across the mark between
+      // frames and shear it rather than push it.
+      scratch.easedPointer.lerp(scratch.pointer, 1 - Math.exp(-POINTER_EASE * dt));
+    } else {
+      scratch.easedPointer.copy(scratch.pointer);
+      system.pointerPrimed = true;
+    }
+  } else {
+    system.pointerPrimed = false;
+  }
+  const px = scratch.easedPointer.x;
+  const py = scratch.easedPointer.y;
 
   const pull = DRIFT_PULL * intensity;
   const swirl = DRIFT_SWIRL * intensity;
+  const disturbKept = Math.exp(-DISTURB_DECAY * dt);
+  const cullX = halfWidth + CULL_MARGIN;
+  const cullY = halfHeight + CULL_MARGIN;
+  const scale = markScaleFor(halfWidth, halfHeight);
+  const absorbRadius = scale * ABSORB_FRACTION;
 
   for (let i = 0; i < TOTAL; i++) {
     const ix = i * 3;
@@ -244,22 +348,36 @@ export function stepParticleSystem(
     let ay: number;
     let az: number;
 
+    // Fades whether or not the cursor is anywhere near, so a particle knocked
+    // loose keeps some of its freedom for a second or two afterwards.
+    const loose = (disturb[i] *= disturbKept);
+
     if (i < MARK_COUNT) {
-      // Rotate the home about Y, then pull the particle toward it.
-      const hx = homes[ix];
-      const hz = homes[iz];
-      ax = (hx * cos + hz * sin - positions[ix]) * SPRING;
-      ay = (homes[iy] - positions[iy]) * SPRING;
-      az = (hz * cos - hx * sin - positions[iz]) * SPRING;
+      // Rotate the home about Y, then pull the particle toward it. The pull
+      // slackens in proportion to how recently the cursor hit it, which is what
+      // lets a broken mark drift rather than snap shut.
+      const spring = SPRING * (1 - SPRING_RELEASE * loose);
+      const hx = homes[ix] * scale;
+      const hz = homes[iz] * scale;
+      ax = (hx * cos + hz * sin - positions[ix]) * spring;
+      ay = (homes[iy] * scale - positions[iy]) * spring;
+      az = (hz * cos - hx * sin - positions[iz]) * spring;
     } else {
       const dx = -positions[ix];
       const dy = -positions[iy];
       const dz = -positions[iz];
       const dist = Math.hypot(dx, dy, dz) || 1;
 
-      if (dist < ABSORB_RADIUS) {
-        // Arrived. Back out to the edge, so the stream never thins out.
-        spawnDrifter(positions, ix);
+      // Either it has arrived, or the swirl has carried it out of sight; both
+      // mean the same thing — put it back on an edge and let it come in again.
+      if (
+        dist < absorbRadius ||
+        positions[ix] < -cullX ||
+        positions[ix] > cullX ||
+        positions[iy] < -cullY ||
+        positions[iy] > cullY
+      ) {
+        spawnDrifter(positions, ix, halfWidth, halfHeight);
         velocities[ix] = 0;
         velocities[iy] = 0;
         velocities[iz] = 0;
@@ -287,8 +405,18 @@ export function stepParticleSystem(
         const push = (CURSOR_FORCE * falloff * falloff) / dist;
         ax += dx * push;
         ay += dy * push;
+        if (falloff > disturb[i]) disturb[i] = falloff;
       }
     }
+
+    // A small constant sway, swelling for anything the cursor has touched, so
+    // nothing in the frame is ever quite still and scattered particles go on
+    // floating instead of sitting where they were pushed.
+    const wander = (WANDER_IDLE + WANDER_BURST * loose) * intensity;
+    const w = elapsed * WANDER_FREQ + phases[i];
+    ax += Math.sin(w) * wander;
+    ay += Math.cos(w * 1.3) * wander;
+    az += Math.sin(w * 0.7) * wander * 0.5;
 
     velocities[ix] += (ax - velocities[ix] * DAMPING) * dt;
     velocities[iy] += (ay - velocities[iy] * DAMPING) * dt;
@@ -302,12 +430,31 @@ export function stepParticleSystem(
   system.points.geometry.attributes.position.needsUpdate = true;
 }
 
-/** Puts one drifter back on the outer ring, flattened to match the mark. */
-function spawnDrifter(positions: Float32Array, ix: number): void {
-  const theta = Math.random() * Math.PI * 2;
-  const radius = SPAWN_MIN + Math.random() * (SPAWN_MAX - SPAWN_MIN);
-  positions[ix] = Math.cos(theta) * radius;
-  positions[ix + 1] = Math.sin(theta) * radius * 0.7;
+/**
+ * Puts one drifter just outside a randomly chosen edge of the visible frame.
+ *
+ * The edge is picked in proportion to its length, so a wide frame takes in more
+ * along the top and bottom than down the sides. Picking one of four at even
+ * odds would crowd the short edges, and on a tall column like this one that is
+ * visible as two dense vertical streams.
+ */
+function spawnDrifter(
+  positions: Float32Array,
+  ix: number,
+  halfWidth: number,
+  halfHeight: number,
+): void {
+  const spanX = halfWidth + SPAWN_MARGIN;
+  const spanY = halfHeight + SPAWN_MARGIN;
+  const vertical = Math.random() * (spanX + spanY) < spanY;
+
+  if (vertical) {
+    positions[ix] = Math.random() < 0.5 ? -spanX : spanX;
+    positions[ix + 1] = (Math.random() * 2 - 1) * spanY;
+  } else {
+    positions[ix] = (Math.random() * 2 - 1) * spanX;
+    positions[ix + 1] = Math.random() < 0.5 ? -spanY : spanY;
+  }
   positions[ix + 2] = (Math.random() - 0.5) * 1.6;
 }
 

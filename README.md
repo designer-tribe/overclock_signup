@@ -142,6 +142,13 @@ Tiga hal yang memakan waktu dan gampang terulang:
    jadi segaris. Ayunan ±31° tetap memberi kesan 3D tanpa pernah kehilangan
    bentuknya.
 
+Partikel ambient masuk dari **tepi frame**, bukan dari lingkaran berjari-jari
+tetap. Lingkaran itu sebuah bentuk — begitu masuk ke dalam frame (dan pasti
+masuk di viewport lebar), kelihatan: partikelnya muncul begitu saja di udara
+mengikuti garis lingkaran tak terlihat. Ukuran marknya juga dihitung dari sisi
+terpendek frame, bukan angka tetap, supaya tidak terpotong di kotak yang lebar-
+pendek seperti di mobile.
+
 Yang berputar adalah **posisi tujuan** partikelnya, bukan group-nya. Kursor
 mendorong partikel di world space; kalau group-nya yang diputar, tiap frame
 pointer harus ditransformasi ke local space dan letak "robek"-nya meleset dari
