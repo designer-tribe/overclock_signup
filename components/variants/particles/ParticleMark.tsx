@@ -185,7 +185,7 @@ export function ParticleMark({
 }
 
 /** How much of the anchor's shorter side the mark fills. */
-const MARK_FILL = 0.82;
+const MARK_FILL = 0.86;
 
 /**
  * Converts the anchor's box — held as fractions of the viewport — into the
