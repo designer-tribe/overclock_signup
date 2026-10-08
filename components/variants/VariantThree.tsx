@@ -92,11 +92,23 @@ export function VariantThree() {
             what the scene measures — so the mark's size and position are set
             here, in the layout, rather than in the simulation.
 
-            Below lg it runs the full width of the viewport and is given a
-            height outright, because the canvas it stands for has no intrinsic
-            size and the row would otherwise collapse. From lg it stretches into
-            the second row instead, shifted a little off centre to sit under the
-            headline rather than square in the column.
+            On phones it is taken out of the flow: it sets where the mark is
+            drawn, but it must not push the form down the page. Left in the
+            grid, its height is the one thing standing between the intro and the
+            card, and the card is what the page is for. Positioned, the form
+            follows the intro directly and the ring passes behind it, showing as
+            an arc above the card and down either side of it.
+
+            `top` is then set so the ring clears the intro copy. The card may
+            cover the mark — that is the trade being made — but a ring of bright
+            particles drawn through a paragraph makes the paragraph unreadable,
+            and that is a different thing.
+
+            From sm it goes back into the flow with a height given outright,
+            because the canvas it stands for has no intrinsic size and the row
+            would collapse. From lg it stretches into the second row instead,
+            shifted a little off centre to sit under the headline rather than
+            square in the column.
 
             It carries the flat mark until the scene reports for duty — and
             keeps it for good where WebGL is unavailable, which is the one case
@@ -104,18 +116,18 @@ export function VariantThree() {
           */}
           <div
             ref={anchorRef}
-            className="relative order-4 -mx-6 h-[28rem] sm:order-3 sm:-mx-10 lg:col-start-1 lg:row-start-2 lg:mx-0 lg:h-auto lg:-translate-x-[5%] lg:self-stretch"
+            className="absolute top-[20rem] -inset-x-6 h-[26rem] sm:relative sm:inset-x-auto sm:top-auto sm:order-3 sm:-mx-10 sm:h-[30rem] lg:col-start-1 lg:row-start-2 lg:mx-0 lg:h-auto lg:-translate-x-[5%] lg:self-stretch"
           >
             {!sceneReady && <MarkFallback />}
           </div>
 
           {/*
-            Pulled up over the mark below lg. The mark wants to be large on a
-            phone and the form wants to be near the top of the fold; letting the
-            card overlap the foot of the logo buys both, and costs nothing —
-            the card is opaque and the particles are behind it anyway.
+            Straight after the intro below lg, with the mark passing behind it.
+            Nothing holds it down now that the anchor is out of the flow, and
+            nothing needs to: the card is opaque and the particles are behind
+            the whole content layer.
           */}
-          <SignupForm className="order-5 -mt-28 sm:order-4 lg:col-start-2 lg:row-start-2 lg:mt-0 lg:self-start" />
+          <SignupForm className="order-4 lg:col-start-2 lg:row-start-2 lg:self-start" />
         </div>
       </div>
     </main>
