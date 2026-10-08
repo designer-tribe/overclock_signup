@@ -3,23 +3,26 @@
 Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
-Ada **dua variasi desain** yang sedang ditinjau. Pemilihnya ada di tab kiri layar —
+Ada **tiga variasi desain** yang sedang ditinjau. Pemilihnya ada di tab kiri layar —
 klik untuk membuka panel pilihan. Pilihannya disimpan di URL (`?v=2&img=2`)
 sehingga bisa dikirim sebagai tautan.
 
 1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
 2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya. Punya
    pilihan background sendiri (`?img=1` / `?img=2`).
+3. **Particles** — hitam pekat, logomark Overclock tersusun dari partikel yang
+   berayun pelan, dengan partikel ambient yang terus mengalir masuk. Kursor
+   memecah marknya.
 
-Keduanya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
+Ketiganya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
 permukaannya.
 
 Figur CRT-head adalah **video yang di-scrub mouse**: videonya tidak pernah
 autoplay, gerakan mouse horizontal yang menarik playhead-nya. Lihat
 `components/hero/HeroVisual.tsx`.
 
-Tidak ada WebGL yang ter-mount saat ini. Paketnya tetap terpasang untuk pekerjaan
-3D berikutnya.
+WebGL hanya ter-mount di variation 3, lewat `dynamic(..., { ssr: false })` —
+three dan kawan-kawannya tidak ikut ter-bundle untuk variation 1 dan 2.
 
 ## Stack
 
@@ -28,7 +31,7 @@ Tidak ada WebGL yang ter-mount saat ini. Paketnya tetap terpasang untuk pekerjaa
 | Framework | Next.js 16 (App Router) · React 19 · TypeScript |
 | Styling | Tailwind CSS v4 (CSS-first, `@theme` di `app/globals.css`) |
 | Animasi | GSAP 3.15 + `@gsap/react` — ScrollTrigger & SplitText sudah gratis di paket publik |
-| 3D / WebGL | three · `@react-three/fiber` v9 · drei · postprocessing — terpasang, belum dipakai |
+| 3D / WebGL | three · `@react-three/fiber` v9 · drei · postprocessing — dipakai di variation 3 |
 | Smooth scroll | Lenis, didorong dari `gsap.ticker` |
 | Form | react-hook-form + Zod (satu skema dipakai client **dan** server) |
 
@@ -57,7 +60,8 @@ app/
   actions.ts          Server Action submitSignup()
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
-  variants/           VariantOne (Studio) · VariantTwo (Workplace) + daftar background
+  variants/           VariantOne (Studio) · VariantTwo (Workplace) · VariantThree (Particles)
+  variants/particles/ Sampling logomark + simulasi partikel + canvas r3f
   variations/         Switcher + panel pemilih (HTML popover API)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
   hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
@@ -110,6 +114,38 @@ Tidak ada komponen atau action yang perlu disentuh.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
 - `robots` masih `noindex` di `app/layout.tsx` — lepas saat siap publik.
+
+## Partikel logomark (variation 3)
+
+Bentuknya diambil dari path SVG brand-nya sendiri (`markPoints.ts`), di-sample
+dengan rejection sampling lewat `Path2D` + `isPointInPath(..., "evenodd")` —
+aturan even-odd itu yang melubangi segitiga di tengah mark. Tidak ada aset
+tambahan yang dikirim; kalau logonya berubah, cukup ganti satu string.
+
+Simulasinya ada di `particleSystem.ts`, sengaja di luar React: array-nya ditulis
+ulang 60x per detik, dan itu persis yang dilarang aturan immutability React
+Compiler terhadap nilai balikan hook. Objeknya dibuat di sana, dipegang `useRef`.
+
+Tiga hal yang memakan waktu dan gampang terulang:
+
+1. **`state.pointer` dari r3f bernilai (0, 0) sebelum ada pointer event** — dan
+   (0, 0) itu titik tengah canvas, tepat di marknya. Dipercaya mentah-mentah,
+   kursor tak kasat mata menahan di tengah logo dan merobeknya sebelum
+   mouse-nya disentuh. Jadi kehadiran pointer dilacak sendiri lewat
+   `pointermove`/`pointerleave` di `gl.domElement`.
+2. **Bloom justru menghancurkan marknya.** Logonya cincin tipis — di beberapa
+   titik hanya selebar satu partikel. Bloom melebarkan tiap titik jadi halo, dan
+   ribuan halo additive itu kabut, bukan logo. Sempat dipakai, lalu dicabut;
+   di atas hitam, titik additive yang tajam sudah terbaca sebagai cahaya.
+3. **Rotasinya ayunan, bukan putaran penuh.** Marknya pipih (tebal 0.1 unit).
+   Diputar penuh terhadap Y, sebagian siklusnya dilihat dari samping dan logonya
+   jadi segaris. Ayunan ±31° tetap memberi kesan 3D tanpa pernah kehilangan
+   bentuknya.
+
+Yang berputar adalah **posisi tujuan** partikelnya, bukan group-nya. Kursor
+mendorong partikel di world space; kalau group-nya yang diputar, tiap frame
+pointer harus ditransformasi ke local space dan letak "robek"-nya meleset dari
+posisi kursor di layar.
 
 ## Video figur (scrub)
 

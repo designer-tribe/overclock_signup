@@ -18,6 +18,11 @@ export const VARIATIONS = [
     name: "Workplace",
     summary: "Full-bleed photograph, darkened, with the form over it.",
   },
+  {
+    id: 3,
+    name: "Particles",
+    summary: "Deep black, with the mark built out of particles the cursor breaks.",
+  },
 ] as const;
 
 export type VariationId = (typeof VARIATIONS)[number]["id"];

@@ -19,6 +19,14 @@
      contrast against a darkened photograph. */
   --color-teal-light: #6fbcad;
   --color-flag: #c8453c;
+
+  /* The dark variation's surface and its text colour. Not pure black: #050505
+     keeps a hair of separation from the browser's own letterboxing, and the
+     cream reads warmer against it than white does.
+     `cream` is also hard-coded in the particle shader — WebGL cannot read a CSS
+     custom property. If it changes here, change it in ParticleMark too. */
+  --color-void: #050505;
+  --color-cream: #f3ece0;
 }
 
 html {
