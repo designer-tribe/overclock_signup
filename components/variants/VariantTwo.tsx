@@ -2,7 +2,8 @@ import Image from "next/image";
 import { Logo } from "@/components/brand/Logo";
 import { HeroCopy } from "@/components/hero/HeroCopy";
 import { SignupForm } from "@/components/form/SignupForm";
-import backdrop from "@/assets/variation-two-bg.webp";
+import { DEFAULT_BACKGROUND, type BackgroundId } from "@/lib/variations";
+import { VARIATION_TWO_BACKGROUNDS } from "./variationTwoBackgrounds";
 
 /**
  * Variation 2 — the photograph runs full bleed behind everything, darkened,
@@ -15,8 +16,17 @@ import backdrop from "@/assets/variation-two-bg.webp";
  * The form card is reused unchanged: its sand surface already reads as a panel
  * against a dark backdrop as well as it does against paper, and forking it for
  * a second surface would mean two copies of the validation wiring.
+ *
+ * Which photograph sits behind it is a separate choice from the variation
+ * itself, so it arrives as a prop rather than being baked in here.
  */
-export function VariantTwo() {
+export function VariantTwo({
+  background = DEFAULT_BACKGROUND,
+}: {
+  background?: BackgroundId;
+}) {
+  const backdrop = VARIATION_TWO_BACKGROUNDS[background];
+
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden">
       {/*
@@ -26,6 +36,10 @@ export function VariantTwo() {
         leave the page black until well after first paint.
       */}
       <Image
+        // key so React swaps the element rather than mutating src in place:
+        // without it the old photograph stays up until the new one decodes,
+        // which reads as the page hanging on the previous choice.
+        key={background}
         src={backdrop}
         alt=""
         fill

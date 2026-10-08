@@ -7,7 +7,9 @@ Ada **dua variasi desain** yang sedang ditinjau. Pemilihnya ada di panel kiri
 layar; pilihannya disimpan di URL (`?v=2`) sehingga bisa dikirim sebagai tautan.
 
 1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
-2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya.
+2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya. Punya
+   pilihan background sendiri (`?img=1` / `?img=2`), bersarang di bawah entri
+   variasinya di modal.
 
 Keduanya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
 permukaannya.
@@ -55,7 +57,7 @@ app/
   actions.ts          Server Action submitSignup()
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
-  variants/           VariantOne (Studio) · VariantTwo (Workplace)
+  variants/           VariantOne (Studio) · VariantTwo (Workplace) + daftar background
   variations/         Switcher + panel pemilih (modal <dialog>)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
   hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
@@ -68,7 +70,7 @@ hooks/
   useReducedMotion.ts
   useToday.ts
 lib/
-  variations.ts       Daftar variasi + state-nya (dibaca dari URL)
+  variations.ts       Daftar variasi & background + state-nya (dibaca dari URL)
   gsap.ts             Registrasi plugin terpusat — selalu import dari sini
   schema.ts           signupSchema (Zod)
   storage/            Adapter tujuan data signup

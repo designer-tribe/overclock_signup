@@ -1,12 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { VARIATIONS, type VariationId } from "@/lib/variations";
+import Image from "next/image";
+import {
+  BACKGROUNDS,
+  VARIATIONS,
+  type Selection,
+  type VariationId,
+} from "@/lib/variations";
+import { VARIATION_TWO_BACKGROUNDS } from "@/components/variants/variationTwoBackgrounds";
 
 type VariationPanelProps = {
-  active: VariationId;
-  onSelect: (id: VariationId) => void;
+  selection: Selection;
+  onChange: (next: Partial<Selection>) => void;
 };
+
+/** Which variations carry a background choice, and so get the nested picker. */
+const BACKGROUND_OWNER: VariationId = 2;
 
 /**
  * Review control for switching between design variations.
@@ -19,7 +29,7 @@ type VariationPanelProps = {
  * inertness of the page behind it and the backdrop pseudo-element — all of
  * which are easy to hand-roll badly and tedious to hand-roll well.
  */
-export function VariationPanel({ active, onSelect }: VariationPanelProps) {
+export function VariationPanel({ selection, onChange }: VariationPanelProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
 
@@ -30,7 +40,8 @@ export function VariationPanel({ active, onSelect }: VariationPanelProps) {
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
-  const activeVariation = VARIATIONS.find((v) => v.id === active) ?? VARIATIONS[0];
+  const activeVariation =
+    VARIATIONS.find((v) => v.id === selection.variation) ?? VARIATIONS[0];
 
   return (
     <>
@@ -73,7 +84,7 @@ export function VariationPanel({ active, onSelect }: VariationPanelProps) {
         aria-labelledby="variation-dialog-title"
         className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-xl bg-paper p-0 text-ink shadow-2xl backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
       >
-        <div className="p-6 sm:p-7">
+        <div className="max-h-[85vh] overflow-y-auto p-6 sm:p-7">
           <h2 id="variation-dialog-title" className="font-serif text-xl">
             Choose a variation
           </h2>
@@ -84,13 +95,15 @@ export function VariationPanel({ active, onSelect }: VariationPanelProps) {
 
           <ul className="mt-5 space-y-2.5">
             {VARIATIONS.map((variation) => {
-              const current = variation.id === active;
+              const current = variation.id === selection.variation;
               return (
                 <li key={variation.id}>
                   <button
                     type="button"
                     onClick={() => {
-                      onSelect(variation.id);
+                      onChange({ variation: variation.id });
+                      // Close on pick: the dialog covers the page, so leaving
+                      // it up hides the very thing the choice was about.
                       setOpen(false);
                     }}
                     aria-current={current}
@@ -120,6 +133,76 @@ export function VariationPanel({ active, onSelect }: VariationPanelProps) {
                       </span>
                     </span>
                   </button>
+
+                  {/*
+                    The background picker is nested under the variation it
+                    belongs to, and choosing one also switches to that variation
+                    — a control that silently does nothing until you select
+                    something else first is worse than no control.
+                  */}
+                  {variation.id === BACKGROUND_OWNER && (
+                    <div className="mt-2.5 ml-4 border-l border-ink/12 pt-0.5 pl-4">
+                      <p
+                        id="background-picker-label"
+                        className="font-sans text-[0.7rem] font-medium tracking-[0.12em] text-ink/45 uppercase"
+                      >
+                        Background
+                      </p>
+                      <ul
+                        aria-labelledby="background-picker-label"
+                        className="mt-2 grid grid-cols-2 gap-2.5"
+                      >
+                        {BACKGROUNDS.map((background) => {
+                          const picked =
+                            selection.background === background.id &&
+                            selection.variation === BACKGROUND_OWNER;
+                          return (
+                            <li key={background.id}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onChange({
+                                    variation: BACKGROUND_OWNER,
+                                    background: background.id,
+                                  });
+                                  setOpen(false);
+                                }}
+                                aria-current={picked}
+                                className={`w-full overflow-hidden rounded-md border text-left transition-colors ${
+                                  picked
+                                    ? "border-teal"
+                                    : "border-ink/12 hover:border-ink/35"
+                                }`}
+                              >
+                                {/* A thumbnail of the real file, so the choice
+                                    is made on the photograph rather than on a
+                                    label guessing at it. */}
+                                <Image
+                                  src={VARIATION_TWO_BACKGROUNDS[background.id]}
+                                  alt=""
+                                  sizes="160px"
+                                  className="aspect-[16/10] w-full bg-ink/5 object-cover"
+                                />
+                                <span className="block px-2.5 py-2">
+                                  <span className="block font-sans text-[0.8rem] font-medium">
+                                    Image {background.id}
+                                    {picked && (
+                                      <span className="ml-1.5 font-normal text-teal">
+                                        ·
+                                      </span>
+                                    )}
+                                  </span>
+                                  <span className="mt-0.5 block font-sans text-xs leading-snug text-ink/55">
+                                    {background.summary}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
                 </li>
               );
             })}
