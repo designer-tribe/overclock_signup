@@ -3,13 +3,13 @@
 Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
-Ada **dua variasi desain** yang sedang ditinjau. Pemilihnya ada di panel kiri
-layar; pilihannya disimpan di URL (`?v=2`) sehingga bisa dikirim sebagai tautan.
+Ada **dua variasi desain** yang sedang ditinjau. Pemilihnya ada di tab kiri layar —
+klik untuk membuka panel pilihan. Pilihannya disimpan di URL (`?v=2&img=2`)
+sehingga bisa dikirim sebagai tautan.
 
 1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
 2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya. Punya
-   pilihan background sendiri (`?img=1` / `?img=2`), bersarang di bawah entri
-   variasinya di modal.
+   pilihan background sendiri (`?img=1` / `?img=2`).
 
 Keduanya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
 permukaannya.
@@ -58,7 +58,7 @@ app/
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
   variants/           VariantOne (Studio) · VariantTwo (Workplace) + daftar background
-  variations/         Switcher + panel pemilih (modal <dialog>)
+  variations/         Switcher + panel pemilih (HTML popover API)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
   hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
   brand/Logo.tsx      Lockup Overclock (aset asli, di-inline)
