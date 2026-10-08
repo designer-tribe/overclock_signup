@@ -3,8 +3,14 @@
 Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
-Layout section-nya sudah mengikuti desain yang disetujui: headline + portrait di
-kiri, intro + form di kanan. Semua aset brand sudah aslinya.
+Ada **dua variasi desain** yang sedang ditinjau. Pemilihnya ada di panel kiri
+layar; pilihannya disimpan di URL (`?v=2`) sehingga bisa dikirim sebagai tautan.
+
+1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
+2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya.
+
+Keduanya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
+permukaannya.
 
 Figur CRT-head adalah **video yang di-scrub mouse**: videonya tidak pernah
 autoplay, gerakan mouse horizontal yang menarik playhead-nya. Lihat
@@ -49,8 +55,10 @@ app/
   actions.ts          Server Action submitSignup()
   globals.css         Token brand + styling field (dotted → solid underline)
 components/
+  variants/           VariantOne (Studio) · VariantTwo (Workplace)
+  variations/         Switcher + panel pemilih (modal <dialog>)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Video figur + scrub mengikuti mouse
+  hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
   brand/Logo.tsx      Lockup Overclock (aset asli, di-inline)
   form/               SignupForm · Field
 providers/
@@ -60,6 +68,7 @@ hooks/
   useReducedMotion.ts
   useToday.ts
 lib/
+  variations.ts       Daftar variasi + state-nya (dibaca dari URL)
   gsap.ts             Registrasi plugin terpusat — selalu import dari sini
   schema.ts           signupSchema (Zod)
   storage/            Adapter tujuan data signup

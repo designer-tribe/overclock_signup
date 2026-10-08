@@ -15,6 +15,9 @@
   --color-sand: #e9e3d6;
   --color-ink: #16181a;
   --color-teal: #0e6b5c;
+  /* The accent on the dark variation — the ink teal has nowhere near enough
+     contrast against a darkened photograph. */
+  --color-teal-light: #6fbcad;
   --color-flag: #c8453c;
 }
 

@@ -74,13 +74,16 @@ export function SignupForm({ className = "" }: { className?: string }) {
 
   const sending = status === "sending";
 
+  // The card is a light surface wherever it is placed, so it states its own
+  // colours rather than inheriting them. Variation 2 sets `text-white` on the
+  // section around it, which otherwise left the headings white on sand.
   return (
-    <div ref={root} className={`bg-sand p-7 sm:p-10 ${className}`}>
+    <div ref={root} className={`bg-sand p-7 text-ink sm:p-10 ${className}`}>
       {status === "success" ? (
         // min-height keeps the card from collapsing when the form is replaced,
         // which would otherwise yank the whole page layout upward.
         <div className="flex min-h-[28rem] flex-col justify-center">
-          <h2 className="font-serif text-2xl sm:text-[1.75rem]">
+          <h2 className="font-serif text-2xl text-ink sm:text-[1.75rem]">
             Thanks — your request is on its way.
           </h2>
           <p className="mt-4 max-w-md text-[0.95rem] leading-relaxed text-ink/70">
@@ -90,7 +93,7 @@ export function SignupForm({ className = "" }: { className?: string }) {
         </div>
       ) : (
         <>
-          <h2 className="font-serif text-2xl leading-snug sm:text-[1.75rem]">
+          <h2 className="font-serif text-2xl leading-snug text-ink sm:text-[1.75rem]">
             Let&rsquo;s Continue The Conversation
           </h2>
           <p className="mt-3 max-w-lg text-[0.95rem] leading-relaxed text-ink/75">

@@ -14,7 +14,17 @@ import { prefersReducedMotion } from "@/hooks/useReducedMotion";
  * animation pass. The pattern is the part worth keeping: it is the shape every
  * text entrance on this page should use.
  */
-export function HeroCopy({ className = "" }: { className?: string }) {
+type HeroCopyProps = {
+  className?: string;
+  /**
+   * Which backdrop this sits on. The ink teal fails contrast badly against a
+   * darkened photograph, so the accent has to change with the surface — the
+   * headline itself just inherits whatever colour the parent sets.
+   */
+  tone?: "ink" | "light";
+};
+
+export function HeroCopy({ className = "", tone = "ink" }: HeroCopyProps) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -56,7 +66,9 @@ export function HeroCopy({ className = "" }: { className?: string }) {
         className="font-serif text-[2rem] leading-[1.14] tracking-[-0.015em] sm:text-[2.4rem] lg:text-[2.6rem]"
       >
         AI is already reshaping your workforce.{" "}
-        <em className="text-teal">Lead the change.</em>
+        <em className={tone === "light" ? "text-teal-light" : "text-teal"}>
+          Lead the change.
+        </em>
       </h1>
     </div>
   );
