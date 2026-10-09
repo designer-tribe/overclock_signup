@@ -138,7 +138,7 @@ export function NametagForm({ className = "" }: { className?: string }) {
  */
 const RIBBON_W = "w-9"; // 2.25rem
 const NEAR_X = "-translate-x-1/2";
-const FAR_X = "translate-x-[40%]";
+const FAR_X = "translate-x-[15%]";
 
 function Strap({ side }: { side: "near" | "far" }) {
   const near = side === "near";
