@@ -54,23 +54,10 @@ export function NametagForm({ className = "" }: { className?: string }) {
     <div ref={root} className={`relative mx-auto max-w-[30rem] ${className}`}>
       <Strap />
 
-      <div className="relative rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
-        {/* The slot, in three layers so the strap goes *into* it rather than
-            lying on top: the shadow the ribbons cast on the badge and the hole
-            itself sit under the strap (z-5, strap is z-10); the hole's lower
-            lip sits over it (z-20) and hides the ribbons' ends. */}
-        <span
-          aria-hidden
-          className="absolute top-0 left-1/2 z-[5] h-[1.1rem] w-[4.25rem] -translate-x-[46%] bg-[linear-gradient(to_bottom,transparent,rgba(22,24,26,0.28))] blur-[3px]"
-        />
-        <span
-          aria-hidden
-          className="absolute top-4 left-1/2 z-[5] h-3.5 w-[4.5rem] -translate-x-1/2 rounded-full bg-[#0b0d0e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.9),0_1px_0_rgba(255,255,255,0.55)]"
-        />
-        <span
-          aria-hidden
-          className="absolute top-[1.5rem] left-1/2 z-20 h-1.5 w-[4.5rem] -translate-x-1/2 rounded-b-full bg-[linear-gradient(to_bottom,#0b0d0e,#1d2124)] shadow-[0_1px_0_rgba(255,255,255,0.55)]"
-        />
+      {/* z-10 over the strap (z-0): the strap runs down *behind* the badge
+          and only shows again through the slot. */}
+      <div className="relative z-10 rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
+        <Slot />
 
         {status === "success" ? (
           // A minimum height so the badge does not snap to a fraction of its
@@ -135,65 +122,96 @@ export function NametagForm({ className = "" }: { className?: string }) {
   );
 }
 
-/**
- * The lanyard: two flat ribbons meeting at the slot and opening into a V as
- * they rise, lit where they meet the badge and dissolving upwards.
+/*
+ * The lanyard: two ribbons of equal width, meeting behind the badge and
+ * opening into a V as they rise off the top of the page.
  *
- * The two are deliberately unequal — the near side of the loop wide and
- * bright, the far side narrower, dimmer and leaning further out — which is
- * what makes it read as one loop seen at an angle rather than two sticks.
+ * Both sides of the strap are the same webbing, so the same width; the far
+ * one is only a shade darker, being the back of the loop.
  *
- * The fade is what lets it run "off the page" at any height. On a phone the
- * badge sits far down the page and a hard-topped strap would start in mid-air
- * over the content above; faded, it simply comes from somewhere above.
+ * Positions are shared with `Slot`, which shows the ribbons again through the
+ * hole: change one and the pieces in the hole stop lining up.
  */
+const RIBBON_W = "w-9"; // 2.25rem
+const NEAR_X = "-translate-x-full";
+const FAR_X = "translate-x-[4%]";
+
 function Strap() {
-  const ribbon = "absolute bottom-0 left-1/2 h-full origin-bottom";
+  const ribbon = `absolute bottom-0 left-1/2 h-full origin-bottom ${RIBBON_W}`;
 
   return (
     <div
       aria-hidden
-      // Bottom sits inside the hole, just above its lower lip (card top +
-      // 1.75rem), so the lip covers the ends. The mask is the upward fade.
-      className="pointer-events-none absolute bottom-[calc(100%-1.75rem)] left-1/2 z-10 h-32 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)]"
+      /*
+        Bottom ends behind the badge, level with the hole. Tall enough on
+        desktop to always run off the top of the screen, so it needs no fade.
+        On a phone the badge sits far down the page, under the copy; a strap
+        that tall would cross the copy, so there it is short and fades out
+        rather than starting in mid-air with a hard edge.
+      */
+      className="pointer-events-none absolute bottom-[calc(100%-1.75rem)] left-1/2 z-0 h-24 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)] lg:h-[100vh] lg:[mask-image:none]"
     >
       <span
-        className={`${ribbon} w-6 translate-x-[14%] rotate-[9deg]`}
+        className={`${ribbon} ${FAR_X} rotate-[9deg]`}
         style={{ backgroundImage: FAR_RIBBON }}
       />
       <span
-        className={`${ribbon} w-9 -translate-x-[96%] -rotate-[3deg]`}
+        className={`${ribbon} ${NEAR_X} -rotate-[3deg]`}
         style={{ backgroundImage: NEAR_RIBBON }}
       />
     </div>
   );
 }
 
+/**
+ * The hole the strap comes through. It sits on the badge, over the strap, and
+ * shows the ribbons again inside it: lit at the lower edge where the loop
+ * turns towards the viewer, lost in the dark at the top where it goes back.
+ */
+function Slot() {
+  const piece = `absolute inset-y-0 left-1/2 ${RIBBON_W}`;
+  return (
+    <span
+      aria-hidden
+      className="absolute top-4 left-1/2 h-3.5 w-20 -translate-x-1/2 overflow-hidden rounded-full bg-[#0b0d0e] shadow-[0_1px_0_rgba(255,255,255,0.55)]"
+    >
+      <span
+        className={`${piece} ${FAR_X}`}
+        style={{ backgroundImage: `${IN_HOLE}, ${FAR_RIBBON}` }}
+      />
+      <span
+        className={`${piece} ${NEAR_X}`}
+        style={{ backgroundImage: `${IN_HOLE}, ${NEAR_RIBBON}` }}
+      />
+      {/* The hole's own depth, over the ribbon pieces inside it. */}
+      <span className="absolute inset-0 rounded-full shadow-[inset_0_2px_3px_rgba(0,0,0,0.9)]" />
+    </span>
+  );
+}
+
 /*
- * Each ribbon is four layers, top first:
- *  - the dark of the hole climbing up the ribbon as it goes in,
- *  - a fine cross-weave, which is what makes it read as webbing not plastic,
- *  - a slight curl across the width: one edge catching light, one turned away,
- *  - the colour itself, lit from the badge and darkening as it rises.
- * The far ribbon is darker throughout and its shadow climbs higher: it is
- * the back of the loop, behind the near one and turned from the light.
+ * A ribbon is solid webbing in two layers, top first: a fine cross-weave,
+ * which makes it read as fabric rather than plastic, and a slight curl across
+ * the width — one edge catching light, one turned away — over a flat colour.
  */
 const WEAVE =
   "repeating-linear-gradient(to top, rgba(0,0,0,0.07) 0 1px, transparent 1px 2.5px)";
 
 const NEAR_RIBBON = [
-  "linear-gradient(to top, rgba(2,12,10,0.95), rgba(2,12,10,0.55) 9px, transparent 22px)",
   WEAVE,
   "linear-gradient(90deg, rgba(255,255,255,0.14), transparent 28%, transparent 70%, rgba(0,0,0,0.28))",
-  "linear-gradient(to top, #1fc3a3, #149a81 18%, #0e6b5c 48%, #0a4a40 85%)",
+  "linear-gradient(#0f7563, #0f7563)",
 ].join(", ");
 
 const FAR_RIBBON = [
-  "linear-gradient(to top, rgba(2,12,10,0.95), rgba(2,12,10,0.5) 26px, transparent 60px)",
   WEAVE,
   "linear-gradient(90deg, rgba(0,0,0,0.3), transparent 35%, rgba(255,255,255,0.08))",
-  "linear-gradient(to top, #12957c, #0e7564 30%, #0a5146 70%, #083c34)",
+  "linear-gradient(#0b5b4e, #0b5b4e)",
 ].join(", ");
+
+/** Inside the hole: dark where the strap goes back, lit at the lip. */
+const IN_HOLE =
+  "linear-gradient(to bottom, rgba(2,10,9,0.95) 15%, rgba(2,10,9,0.45) 60%, transparent)";
 
 /**
  * A field as the badge sets one: the label above, a line beneath.
