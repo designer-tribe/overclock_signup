@@ -55,11 +55,21 @@ export function NametagForm({ className = "" }: { className?: string }) {
       <Strap />
 
       <div className="relative rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
-        {/* The slot the strap feeds through. Above the strap in the stack, so
-            the ribbon's end disappears into it rather than lying on top. */}
+        {/* The slot, in three layers so the strap goes *into* it rather than
+            lying on top: the shadow the ribbons cast on the badge and the hole
+            itself sit under the strap (z-5, strap is z-10); the hole's lower
+            lip sits over it (z-20) and hides the ribbons' ends. */}
         <span
           aria-hidden
-          className="absolute top-4 left-1/2 z-20 h-3 w-20 -translate-x-1/2 rounded-full bg-ink/85 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+          className="absolute top-0 left-1/2 z-[5] h-[1.1rem] w-[4.25rem] -translate-x-[46%] bg-[linear-gradient(to_bottom,transparent,rgba(22,24,26,0.28))] blur-[3px]"
+        />
+        <span
+          aria-hidden
+          className="absolute top-4 left-1/2 z-[5] h-3.5 w-[4.5rem] -translate-x-1/2 rounded-full bg-[#0b0d0e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.9),0_1px_0_rgba(255,255,255,0.55)]"
+        />
+        <span
+          aria-hidden
+          className="absolute top-[1.5rem] left-1/2 z-20 h-1.5 w-[4.5rem] -translate-x-1/2 rounded-b-full bg-[linear-gradient(to_bottom,#0b0d0e,#1d2124)] shadow-[0_1px_0_rgba(255,255,255,0.55)]"
         />
 
         {status === "success" ? (
@@ -138,23 +148,52 @@ export function NametagForm({ className = "" }: { className?: string }) {
  * over the content above; faded, it simply comes from somewhere above.
  */
 function Strap() {
-  // Vertical only: a flat ribbon, not a tube, so no shading across its width.
-  const ribbon =
-    "absolute bottom-0 left-1/2 h-full origin-bottom bg-[linear-gradient(to_top,#17a88f,#0e6b5c_35%,rgba(14,107,92,0.35)_75%,transparent)]";
+  const ribbon = "absolute bottom-0 left-1/2 h-full origin-bottom";
 
   return (
     <div
       aria-hidden
-      // Bottom sits on the slot's centre: card top + 1rem + half the slot.
-      className="pointer-events-none absolute bottom-[calc(100%-1.375rem)] left-1/2 z-10 h-28 w-28 -translate-x-1/2"
+      // Bottom sits inside the hole, just above its lower lip (card top +
+      // 1.75rem), so the lip covers the ends. The mask is the upward fade.
+      className="pointer-events-none absolute bottom-[calc(100%-1.75rem)] left-1/2 z-10 h-32 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)]"
     >
-      <span className={`${ribbon} w-9 -translate-x-[96%] -rotate-[3deg]`} />
       <span
-        className={`${ribbon} w-6 translate-x-[14%] rotate-[9deg] opacity-70`}
+        className={`${ribbon} w-6 translate-x-[14%] rotate-[9deg]`}
+        style={{ backgroundImage: FAR_RIBBON }}
+      />
+      <span
+        className={`${ribbon} w-9 -translate-x-[96%] -rotate-[3deg]`}
+        style={{ backgroundImage: NEAR_RIBBON }}
       />
     </div>
   );
 }
+
+/*
+ * Each ribbon is four layers, top first:
+ *  - the dark of the hole climbing up the ribbon as it goes in,
+ *  - a fine cross-weave, which is what makes it read as webbing not plastic,
+ *  - a slight curl across the width: one edge catching light, one turned away,
+ *  - the colour itself, lit from the badge and darkening as it rises.
+ * The far ribbon is darker throughout and its shadow climbs higher: it is
+ * the back of the loop, behind the near one and turned from the light.
+ */
+const WEAVE =
+  "repeating-linear-gradient(to top, rgba(0,0,0,0.07) 0 1px, transparent 1px 2.5px)";
+
+const NEAR_RIBBON = [
+  "linear-gradient(to top, rgba(2,12,10,0.95), rgba(2,12,10,0.55) 9px, transparent 22px)",
+  WEAVE,
+  "linear-gradient(90deg, rgba(255,255,255,0.14), transparent 28%, transparent 70%, rgba(0,0,0,0.28))",
+  "linear-gradient(to top, #1fc3a3, #149a81 18%, #0e6b5c 48%, #0a4a40 85%)",
+].join(", ");
+
+const FAR_RIBBON = [
+  "linear-gradient(to top, rgba(2,12,10,0.95), rgba(2,12,10,0.5) 26px, transparent 60px)",
+  WEAVE,
+  "linear-gradient(90deg, rgba(0,0,0,0.3), transparent 35%, rgba(255,255,255,0.08))",
+  "linear-gradient(to top, #12957c, #0e7564 30%, #0a5146 70%, #083c34)",
+].join(", ");
 
 /**
  * A field as the badge sets one: the label above, a line beneath.
