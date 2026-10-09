@@ -217,17 +217,15 @@ sepanjang halaman.
 dengan V1 (foto hero, copy, pembicara, takeaway, footer), layout-nya mengikuti
 comp V2:
 
-- Form badge berpita (`NametagForm`, sama dengan V1) **dipaku di hero**, tidak
-  sticky — halamannya pendek. Bayangannya offset rust keras
-  (`cardShadow`), bukan bayangan lembut V1.
+- Form badge berpita (`NametagForm`) **identik dengan V1** — lebar, bayangan,
+  tombol — tapi **dipaku di hero**, tidak sticky, karena halamannya pendek.
 - Tiga blok piksel (rust, teal, rust kecil) menurun dari tepi kiri badge,
   ditempatkan dari `--band` sehingga selalu menempel di tepi bawah foto. Hanya
   di `lg` ke atas.
 - Logo VYOND | Overclock di `z-30`, di atas pita lanyard yang naik ke luar
   layar.
-- Kolom: dari `xl` badge 628px (lebar comp) dan copy mengisi sisanya; di `lg`
-  dibagi rata, karena 628px di layar 1024 menyisakan kolom headline yang
-  terlalu sempit.
+- Kolom: dari `xl` kolom badge selebar badge (30rem, sama dengan V1) dan copy
+  mengisi sisanya; di `lg` dibagi rata.
 
 **Aset yang belum ada:** ilustrasi ranting pohon dengan orang berbaring di
 bawah hero kiri. Tempatnya sudah kosong di layout; tinggal ditambahkan saat

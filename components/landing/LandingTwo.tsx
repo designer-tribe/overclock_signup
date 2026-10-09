@@ -20,12 +20,12 @@ import { FileRow } from "./Takeaways";
  */
 
 /**
- * The badge column is the comp's 628px card and the copy takes what is left —
- * from xl. At lg that would leave the headline a sliver, so the two split
- * evenly there instead.
+ * From xl the badge column is the badge's own width (V1's, 30rem) and the
+ * copy takes what is left. At lg that would still leave the headline narrow,
+ * so the two split evenly there instead.
  */
 const COLUMNS =
-  "lg:grid-cols-2 lg:gap-x-16 xl:grid-cols-[minmax(0,1fr)_minmax(0,39.25rem)]";
+  "lg:grid-cols-2 lg:gap-x-16 xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]";
 
 const NAME = "Ahmed Haque";
 const ROLE = "Co-Founder and CEO, Overclock Accelerator";
@@ -64,12 +64,14 @@ export function LandingTwo() {
             <LandingHeroCopy />
           </div>
 
-          <div className="relative pt-10 lg:pt-[var(--form-top)]">
-            <PixelSteps />
-            <NametagForm
-              className="max-w-[39.25rem]!"
-              cardShadow="shadow-[14px_14px_0_0_var(--color-rust)]"
-            />
+          {/* The same badge as V1, at V1's width. The wrapper is the badge's
+              own width, so the steps hang off the badge's edge rather than
+              the column's when the column is the wider of the two. */}
+          <div className="pt-10 lg:pt-[var(--form-top)]">
+            <div className="relative mx-auto max-w-[30rem]">
+              <PixelSteps />
+              <NametagForm />
+            </div>
           </div>
         </div>
 
@@ -137,12 +139,12 @@ export function LandingTwo() {
  * — each block's corner touches the next.
  *
  * Placed from the column's left edge (the badge's) and from the photograph's
- * bottom edge — the column starts at the top of the page, as the band does,
- * so that edge is simply `--band` down it.
+ * bottom edge. The wrapper starts `--form-top` down the page, so that edge is
+ * `--band - --form-top` down it.
  * Desktop only: below lg there is no gutter for them to step into.
  */
 function PixelSteps() {
-  const edge = "top-[var(--band)]";
+  const edge = "top-[calc(var(--band)-var(--form-top))]";
   return (
     <div aria-hidden className="hidden lg:block">
       <span
@@ -152,7 +154,7 @@ function PixelSteps() {
         className={`absolute right-[calc(100%+4.1rem)] ${edge} h-[7.3rem] w-[7.3rem] bg-teal`}
       />
       <span
-        className={`absolute right-[calc(100%+11.4rem)] top-[calc(var(--band)+7.3rem)] h-[1.9rem] w-[1.9rem] bg-rust`}
+        className={`absolute right-[calc(100%+11.4rem)] top-[calc(var(--band)-var(--form-top)+7.3rem)] h-[1.9rem] w-[1.9rem] bg-rust`}
       />
     </div>
   );

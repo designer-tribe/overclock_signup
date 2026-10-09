@@ -27,7 +27,7 @@ export function SpeakerBio({ className = "" }: { className?: string }) {
         instead, the cutout floats in a band of teal with his head short of the
         top, which is not how the comp has him.
       */}
-      <div className="flex items-stretch bg-teal shadow-[0_6px_0_0_var(--color-ink)]">
+      <div className="flex items-stretch border border-ink bg-teal shadow-[0_6px_0_0_var(--color-ink)]">
         {/*
           The portrait is a cutout on transparency, so the teal is what shows
           behind him and the block needs no padding of its own — he stands on

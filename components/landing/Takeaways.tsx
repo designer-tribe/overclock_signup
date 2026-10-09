@@ -18,7 +18,7 @@ export function Takeaways({
   return (
     <section className={className}>
       {/* Same hard offset shadow as the speaker block — see the note there. */}
-      <div className="bg-sand p-6 shadow-[0_6px_0_0_var(--color-ink)] sm:p-8">
+      <div className="border border-ink bg-sand p-6 shadow-[0_6px_0_0_var(--color-ink)] sm:p-8">
         <h2 className="max-w-sm font-serif text-xl leading-snug font-semibold text-ink sm:text-[1.6rem]">
           More People Leaders Want a Say in AI Strategy
         </h2>

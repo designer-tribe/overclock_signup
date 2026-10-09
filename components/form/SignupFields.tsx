@@ -110,8 +110,10 @@ const BUTTON_STYLES = {
   // pressing collapses it rather than fading it.
   offset:
     "bg-teal px-6 py-4 shadow-[0_4px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_2px_0_0_var(--color-ink)] active:translate-y-[4px] active:shadow-none",
-  // The badge's: square-cornered like that card, lit from above.
-  soft: "rounded-[2px] bg-[linear-gradient(180deg,#14826f,var(--color-teal))] px-6 py-3.5 shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_6px_16px_-6px_rgba(14,107,92,0.7)] transition-[filter,transform] duration-150 hover:brightness-110 active:translate-y-px",
+  // The badge's: the same offset, with a 1px ink outline so the button
+  // holds its edge against the badge's pale surface.
+  outlined:
+    "border border-ink bg-teal px-6 py-3.5 shadow-[0_5px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_3px_0_0_var(--color-ink)] active:translate-y-[5px] active:shadow-none",
 } as const;
 
 export function SubmitButton({
