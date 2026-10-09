@@ -132,13 +132,13 @@ export function NametagForm({ className = "" }: { className?: string }) {
  * Both sides of the strap are the same webbing, so the same width; the far
  * one is only a shade darker, being the back of the loop.
  *
- * The near ribbon is centred on the badge, and so on the slot, which is sized
- * from it (1.5× its width). The far ribbon starts just right of it and is
+ * The near ribbon sits a touch left of the badge's centre, inside the slot,
+ * which is sized from it (1.5× its width). The far ribbon starts just right of it and is
  * only ever seen above the badge.
  */
 const RIBBON_W = "w-[2.5625rem]";
-const NEAR_X = "-translate-x-1/2";
-const FAR_X = "-translate-x-[13%]";
+const NEAR_X = "-translate-x-[55%]";
+const FAR_X = "-translate-x-[18%]";
 
 function Strap({ side }: { side: "near" | "far" }) {
   const near = side === "near";
