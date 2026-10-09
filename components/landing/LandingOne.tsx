@@ -60,11 +60,13 @@ export function LandingOne() {
       Three numbers the page is built from, as variables rather than as values
       repeated down the file. The band is 620px, as specified; the brand bar
       takes a fixed slice off the top of it; and the copy block takes what is
-      left, so it ends exactly where the photograph does. The cell below is the
-      gap between the foot of the band and the first rule, and the accent block
-      fills it — which is the only way that block can sit flush against the
-      photograph without someone re-deriving the arithmetic by hand every time
-      the lockups change size.
+      left, so it ends exactly where the photograph does.
+
+      `--cell` is the gap between the foot of the band and the first rule, and
+      it is also the side of the accent block that fills it — the block takes
+      it for both its height and its width, so the block is square by
+      construction rather than by two numbers that happen to agree. Shrink it
+      and everything below the band rises with it.
     */
     <main
       className="relative min-h-dvh bg-paper text-ink"
@@ -72,7 +74,7 @@ export function LandingOne() {
         {
           "--band": "620px",
           "--bar": "5.5rem",
-          "--cell": "4.75rem",
+          "--cell": "2.75rem",
         } as React.CSSProperties
       }
     >
@@ -111,7 +113,7 @@ export function LandingOne() {
             <div className="relative h-[var(--cell)]">
               <span
                 aria-hidden
-                className="absolute inset-y-0 left-full hidden w-11 -translate-x-1.5 bg-rust lg:block"
+                className="absolute inset-y-0 left-full hidden w-[var(--cell)] -translate-x-1.5 bg-rust lg:block"
               />
             </div>
 
