@@ -1,35 +1,19 @@
-# Overclock — Webinar Signup
+# Overclock — Webinar Landing
 
-Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
-sesi 1-on-1.
+Landing page untuk peserta webinar Overclock: hero, profil pembicara, file
+takeaway, dan form untuk meminta sesi lanjutan.
 
-Ada **dua halaman** yang sedang ditinjau, masing-masing dengan variasinya
-sendiri. Pemilihnya ada di tab kiri layar — klik untuk membuka panel pilihan.
-Pilihannya disimpan di URL (`?page=landing&v=1`) sehingga bisa dikirim sebagai
-tautan.
-
-**Signup** — satu section: pitch dan form berdampingan.
-
-1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
-2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya. Punya
-   pilihan background sendiri (`?img=1` / `?img=2`).
-3. **Particles** — hitam pekat, logomark Overclock tersusun dari partikel yang
-   berayun pelan, dengan partikel ambient yang terus mengalir masuk. Kursor
-   memecah marknya.
-
-**Landing** — beberapa section, di-scroll, dengan form yang menemani di samping.
+Ada **dua layout** yang sedang ditinjau. Pemilihnya ada di tab kiri layar —
+klik untuk membuka panel pilihan. Pilihannya disimpan di URL (`?v=1` / `?v=2`)
+sehingga bisa dikirim sebagai tautan.
 
 1. **V1** — hero foto, profil pembicara, takeaway, dan kolom form yang sticky.
+2. **V2** — form dipaku di hero, takeaway dan pembicara berdampingan.
 
-Id variasinya **per halaman**: `v=1` berarti Studio di Signup dan V1 di Landing.
-Semuanya memakai `SignupForm` yang sama; yang berbeda permukaannya.
+Keduanya memakai form badge berpita yang sama (`NametagForm`).
 
-Figur CRT-head adalah **video yang di-scrub mouse**: videonya tidak pernah
-autoplay, gerakan mouse horizontal yang menarik playhead-nya. Lihat
-`components/hero/HeroVisual.tsx`.
-
-WebGL hanya ter-mount di variation 3, lewat `dynamic(..., { ssr: false })` —
-three dan kawan-kawannya tidak ikut ter-bundle untuk variation 1 dan 2.
+Halaman **Signup** (Studio / Workplace / Particles) sudah dihapus. Kodenya
+masih ada di riwayat git kalau suatu saat dibutuhkan lagi.
 
 ## Stack
 
@@ -38,7 +22,6 @@ three dan kawan-kawannya tidak ikut ter-bundle untuk variation 1 dan 2.
 | Framework | Next.js 16 (App Router) · React 19 · TypeScript |
 | Styling | Tailwind CSS v4 (CSS-first, `@theme` di `app/globals.css`) |
 | Animasi | GSAP 3.15 + `@gsap/react` — ScrollTrigger & SplitText sudah gratis di paket publik |
-| 3D / WebGL | three · `@react-three/fiber` v9 · drei · postprocessing — dipakai di variation 3 |
 | Smooth scroll | Lenis, didorong dari `gsap.ticker` |
 | Form | react-hook-form + Zod (satu skema dipakai client **dan** server) |
 
@@ -69,27 +52,22 @@ pnpm exec tsc --noEmit
 
 ```
 app/
-  page.tsx            Satu-satunya route — single section
+  page.tsx            Satu-satunya route — layout V1 atau V2 dari `?v=`
   actions.ts          Server Action submitSignup()
-  globals.css         Token brand + styling field (dotted → solid underline)
+  globals.css         Token brand + styling field
 components/
-  variants/           VariantOne (Studio) · VariantTwo (Workplace) · VariantThree (Particles)
-  variants/particles/ Sampling logomark + simulasi partikel + canvas r3f
-  landing/            Halaman Landing V1 — hero foto, profil pembicara, takeaway
+  landing/            LandingOne (V1) · LandingTwo (V2) · NametagForm (badge
+                      berpita) · LandingHero · SpeakerBio · Takeaways · footer
   variations/         Switcher + panel pemilih (HTML popover API)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
-  hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
   brand/Logo.tsx      Lockup Overclock (aset asli, di-inline)
-  form/               useSignupForm (logika) · SignupFields (kontrol) ·
-                      SignupForm (kartu) · Field
+  form/               useSignupForm (logika) · SignupFields (kontrol) · Field
 providers/
   SmoothScrollProvider.tsx
 hooks/
-  usePointer.ts       Posisi pointer di ref — bukan state, supaya tidak re-render
   useReducedMotion.ts
-  useToday.ts
 lib/
-  variations.ts       Daftar halaman, variasi & background + state-nya (dari URL)
+  variations.ts       Daftar layout + state-nya (dari URL)
   gsap.ts             Registrasi plugin terpusat — selalu import dari sini
   schema.ts           signupSchema (Zod)
   storage/            Adapter tujuan data signup
@@ -102,9 +80,9 @@ lib/
 - **Pakai `useGSAP()`**, bukan `useEffect` manual — cleanup/revert otomatis, dan
   itu yang bikin aman di React 19 Strict Mode.
 - **Jangan taruh nilai per-frame di `useState`.** Pointer, scroll progress, dan
-  sejenisnya masuk ke `useRef` lalu dibaca di dalam `useFrame`.
+  sejenisnya masuk ke `useRef`.
 - **Apa pun yang menyentuh `window`/`document` saat render** harus di balik
-  `HeroCanvas` (client boundary) atau sebuah hook client.
+  client boundary atau sebuah hook client.
 - **Setiap animasi wajib punya jalur reduced-motion.** Lihat `useReducedMotion`.
 
 ## Penyimpanan data signup
@@ -186,10 +164,8 @@ masing memakan ruang vertikal yang dibutuhkan field.
 
 Logikanya **tidak diduplikasi**: `useSignupForm` memegang validasi, submit, dan
 pemasangan ulang error dari server; `SignupFields` memegang kelima kontrolnya
-beserta token `autoComplete`-nya. Yang berbeda cuma bingkainya — `SignupForm`
-(kartu, dipakai halaman Signup) dan `NametagForm` (badge, dipakai Landing).
-Kalau dua salinan dibiarkan, salah satunya cepat atau lambat jadi yang lupa
-memasang ulang field error.
+beserta token `autoComplete`-nya; `NametagForm` hanya bingkainya. Kalau bingkai
+lain dibutuhkan lagi, pakai keduanya — jangan menyalin logikanya.
 
 **Form sticky-nya satu baris grid.** Kolom kiri adalah *satu* grid item tinggi
 berisi semua section; kolom kanan satu item pendek di sebelahnya. Karena
@@ -213,7 +189,7 @@ sepanjang halaman.
 
 ## Landing V2
 
-`?page=landing&v=2` — `components/landing/LandingTwo.tsx`. Kontennya sama
+`?v=2` — `components/landing/LandingTwo.tsx`. Kontennya sama
 dengan V1 (foto hero, copy, pembicara, takeaway, footer), layout-nya mengikuti
 comp V2:
 
@@ -231,86 +207,3 @@ comp V2:
 figur di ranting, menempel di tepi kiri halaman tepat di bawah foto. Hanya di
 `lg` ke atas; ditampilkan 352px lebar, jadi file ini cukup untuk layar 2x.
 Kalau mau lebih tajam di layar 3x, kirim versi ≥1100px.
-
-## Partikel logomark (variation 3)
-
-Bentuknya diambil dari path SVG brand-nya sendiri (`markPoints.ts`), di-sample
-dengan rejection sampling lewat `Path2D` + `isPointInPath(..., "evenodd")` —
-aturan even-odd itu yang melubangi segitiga di tengah mark. Tidak ada aset
-tambahan yang dikirim; kalau logonya berubah, cukup ganti satu string.
-
-Simulasinya ada di `particleSystem.ts`, sengaja di luar React: array-nya ditulis
-ulang 60x per detik, dan itu persis yang dilarang aturan immutability React
-Compiler terhadap nilai balikan hook. Objeknya dibuat di sana, dipegang `useRef`.
-
-Tiga hal yang memakan waktu dan gampang terulang:
-
-1. **`state.pointer` dari r3f bernilai (0, 0) sebelum ada pointer event** — dan
-   (0, 0) itu titik tengah canvas, tepat di marknya. Dipercaya mentah-mentah,
-   kursor tak kasat mata menahan di tengah logo dan merobeknya sebelum
-   mouse-nya disentuh. Jadi kehadiran pointer dilacak sendiri lewat
-   `pointermove`/`pointerleave` di `gl.domElement`.
-2. **Bloom justru menghancurkan marknya.** Logonya cincin tipis — di beberapa
-   titik hanya selebar satu partikel. Bloom melebarkan tiap titik jadi halo, dan
-   ribuan halo additive itu kabut, bukan logo. Sempat dipakai, lalu dicabut;
-   di atas hitam, titik additive yang tajam sudah terbaca sebagai cahaya.
-3. **Rotasinya ayunan, bukan putaran penuh.** Marknya pipih (tebal 0.1 unit).
-   Diputar penuh terhadap Y, sebagian siklusnya dilihat dari samping dan logonya
-   jadi segaris. Ayunan ±31° tetap memberi kesan 3D tanpa pernah kehilangan
-   bentuknya.
-
-**Canvas-nya satu halaman penuh** (`fixed inset-0`, di belakang konten), bukan
-sebesar kolom tempat marknya. Ini bukan detail: partikel harus datang dari suatu
-tempat, dan kalau canvas-nya hanya sebesar kolom, tepi kolom itulah yang jadi
-tempat mereka muncul — terlihat sebagai kotak berisi partikel yang menyembur
-dari sisi-sisinya. Spawn-nya juga dari luar tepi halaman, bukan dari lingkaran
-berjari-jari tetap: lingkaran itu sebuah bentuk, dan bentuk di dalam frame itu
-kelihatan.
-
-Karena canvas-nya seluas halaman, posisi dan ukuran marknya diukur dari sebuah
-**elemen jangkar** kosong di grid kolom kiri (ResizeObserver + listener scroll,
-bukan `getBoundingClientRect` tiap frame — itu memaksa reflow 60x per detik).
-Jadi logonya mengikuti layout, bukan menyimpan salinan breakpoint-nya sendiri.
-
-Canvas-nya `pointer-events-none` supaya form tetap bisa diklik; r3f dipasangi
-`eventSource={document.body}` + `eventPrefix="client"` supaya kursor tetap
-sampai ke marknya dari mana pun di halaman.
-
-Yang berputar adalah **posisi tujuan** partikelnya, bukan group-nya. Kursor
-mendorong partikel di world space; kalau group-nya yang diputar, tiap frame
-pointer harus ditransformasi ke local space dan letak "robek"-nya meleset dari
-posisi kursor di layar.
-
-## Video figur (scrub)
-
-`public/monitor-scrub.{mp4,webm}` bukan file asli — diproses ulang lewat
-`scripts/key-video.py` + ffmpeg. Tiga hal yang dilakukan, dan ketiganya penting:
-
-1. **Latar di-key lalu di-composite ulang ke warna paper.** Video tidak punya
-   alpha. Latar aslinya bergeser 2–3 level antar-frame dan punya vignette 4–7
-   level dalam satu frame — itu yang terlihat sebagai "latar menerang di
-   beberapa frame". Koreksi warna statis tidak bisa menuntaskannya, jadi latar
-   dipisahkan dulu (flood-fill dari tepi + pemulihan berbasis warna untuk celah
-   antar kabel), baru di-composite ke satu warna datar.
-2. **`-g 1` wajib.** File aslinya hanya punya satu keyframe untuk 5 detik penuh,
-   jadi tiap seek harus decode maju dari frame 0 dan scrub-nya tersendat.
-3. **Warna composite dikompensasi.** Round-trip RGB → yuv420 → RGB menggeser
-   nilai beberapa level, dan browser menggeser berbeda dari ffmpeg. Angka di
-   script (247, 246, 241) adalah hasil kalibrasi terhadap **decode browser**,
-   bukan nilai token mentah. Kalau palet berubah, kalibrasi ulang dengan
-   mengukur di browser, bukan dengan menyalin token.
-
-```bash
-python3 scripts/key-video.py <sumber>.mp4 public/
-```
-
-MP4 ditaruh lebih dulu dari WebM: pada encoding all-intra, x264 menghasilkan file
-lebih kecil daripada VP9 (2.1MB lawan 2.6MB). WebM hanya fallback untuk build
-tanpa H.264 — termasuk Chromium headless, yang tidak bisa decode H.264 sama
-sekali, jadi **jalur MP4 tidak pernah terverifikasi otomatis**; cek manual di
-browser kalau videonya diganti.
-
-Versi beralpha (VP9 `yuva420p`) juga sudah diuji dan berfungsi, tapi tidak
-dipakai: ukurannya 5.5MB lawan 2.1MB untuk hasil visual yang sama di atas latar
-datar. Kalau figur ini nanti dipakai di atas latar bergradasi atau berwarna,
-itu jalur yang benar — script-nya sudah menghasilkan frame RGBA.

@@ -10,8 +10,8 @@ import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 /**
  * The signup form as an event badge, hung on a lanyard strap.
  *
- * Same form as the signup page's card — same validation, same action, same
- * controls, via `useSignupForm` and `SignupFields`. What changes is the frame.
+ * The form logic and controls live in `useSignupForm` and `SignupFields`;
+ * this is the frame they are set in.
  *
  * The strap is two ribbons converging on the slot, the way a lanyard loop
  * reads from the front, and it runs up off the top of the page. No clasp:
@@ -109,7 +109,7 @@ export function NametagForm({ className = "" }: { className?: string }) {
               )}
 
               <div className="pt-1">
-                <SubmitButton sending={sending} variant="outlined" />
+                <SubmitButton sending={sending} />
               </div>
             </form>
 

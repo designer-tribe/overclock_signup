@@ -19,7 +19,7 @@ type SignupFieldsProps = {
 
 /**
  * The five controls, their names, their autocomplete tokens and their error
- * wiring — shared by both presentations of the form.
+ * wiring, kept apart from any one frame for the form.
  *
  * `Field` is injectable so a surface can change how a control is framed
  * without restating which controls exist. The nametag passes its own, which
@@ -104,32 +104,26 @@ export function SignupFields({
   );
 }
 
-/** The submit button, in the design's hard-offset treatment. */
-const BUTTON_STYLES = {
-  // The hard offset shadow is the design's "sitting on the page" treatment;
-  // pressing collapses it rather than fading it.
-  offset:
-    "bg-teal px-6 py-4 shadow-[0_4px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_2px_0_0_var(--color-ink)] active:translate-y-[4px] active:shadow-none",
-  // The badge's: the same offset, with a 1px ink outline so the button
-  // holds its edge against the badge's pale surface.
-  outlined:
-    "border border-ink bg-teal px-6 py-3.5 shadow-[0_5px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_3px_0_0_var(--color-ink)] active:translate-y-[5px] active:shadow-none",
-} as const;
+/**
+ * The submit button: flat teal with a 1px ink outline and a hard ink offset
+ * beneath — the design's "sitting on the page" treatment. Pressing collapses
+ * the offset rather than fading it.
+ */
+const BUTTON_STYLE =
+  "border border-ink bg-teal px-6 py-3.5 shadow-[0_5px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_3px_0_0_var(--color-ink)] active:translate-y-[5px] active:shadow-none";
 
 export function SubmitButton({
   sending,
-  variant = "offset",
   className = "",
 }: {
   sending: boolean;
-  variant?: keyof typeof BUTTON_STYLES;
   className?: string;
 }) {
   return (
     <button
       type="submit"
       disabled={sending}
-      className={`group flex w-full items-center justify-center gap-2.5 text-[0.95rem] font-medium text-white disabled:cursor-not-allowed disabled:opacity-70 ${BUTTON_STYLES[variant]} ${className}`}
+      className={`group flex w-full items-center justify-center gap-2.5 text-[0.95rem] font-medium text-white disabled:cursor-not-allowed disabled:opacity-70 ${BUTTON_STYLE} ${className}`}
     >
       {sending ? "Sending…" : "Request a conversation"}
       {!sending && (
