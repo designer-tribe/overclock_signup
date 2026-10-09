@@ -52,10 +52,12 @@ export function NametagForm({ className = "" }: { className?: string }) {
   */
   return (
     <div ref={root} className={`relative mx-auto max-w-[30rem] ${className}`}>
-      <Strap />
+      {/* The loop threads the slot: the far ribbon runs down behind the badge
+          (z-0) and shows again inside the hole; the near one comes down over
+          the badge (z-20) and goes into the hole. */}
+      <Strap side="far" />
+      <Strap side="near" />
 
-      {/* z-10 over the strap (z-0): the strap runs down *behind* the badge
-          and only shows again through the slot. */}
       <div className="relative z-10 rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
         <Slot />
 
@@ -123,50 +125,55 @@ export function NametagForm({ className = "" }: { className?: string }) {
 }
 
 /*
- * The lanyard: two ribbons of equal width, meeting behind the badge and
- * opening into a V as they rise off the top of the page.
+ * The lanyard: two ribbons of equal width threading the slot — the near one
+ * over the badge, the far one behind it — opening into a V as they rise off
+ * the top of the page.
  *
  * Both sides of the strap are the same webbing, so the same width; the far
  * one is only a shade darker, being the back of the loop.
  *
- * Positions are shared with `Slot`, which shows the ribbons again through the
- * hole: change one and the pieces in the hole stop lining up.
+ * FAR_X is shared with `Slot`, which shows the far ribbon again through the
+ * hole: change one and the piece in the hole stops lining up.
  */
 const RIBBON_W = "w-9"; // 2.25rem
 const NEAR_X = "-translate-x-full";
 const FAR_X = "translate-x-[4%]";
 
-function Strap() {
-  const ribbon = `absolute bottom-0 left-1/2 h-full origin-bottom ${RIBBON_W}`;
+function Strap({ side }: { side: "near" | "far" }) {
+  const near = side === "near";
 
   return (
     <div
       aria-hidden
       /*
-        Bottom ends behind the badge, level with the hole. Tall enough on
-        desktop to always run off the top of the screen, so it needs no fade.
-        On a phone the badge sits far down the page, under the copy; a strap
-        that tall would cross the copy, so there it is short and fades out
-        rather than starting in mid-air with a hard edge.
+        Tall enough on desktop to always run off the top of the screen, so it
+        needs no fade. On a phone the badge sits far down the page, under the
+        copy; a strap that tall would cross the copy, so there it is short and
+        fades out rather than starting in mid-air with a hard edge.
+
+        The near ribbon ends at the hole's centre line, darkening into it; the
+        far one ends behind the badge, level with the hole's lip.
       */
-      className="pointer-events-none absolute bottom-[calc(100%-1.75rem)] left-1/2 z-0 h-24 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)] lg:h-[100vh] lg:[mask-image:none]"
+      className={`pointer-events-none absolute left-1/2 h-24 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)] lg:h-[100vh] lg:[mask-image:none] ${
+        near ? "bottom-[calc(100%-1.45rem)] z-20 drop-shadow-[1px_2px_2px_rgba(0,0,0,0.22)]" : "bottom-[calc(100%-1.75rem)] z-0"
+      }`}
     >
       <span
-        className={`${ribbon} ${FAR_X} rotate-[9deg]`}
-        style={{ backgroundImage: FAR_RIBBON }}
-      />
-      <span
-        className={`${ribbon} ${NEAR_X} -rotate-[3deg]`}
-        style={{ backgroundImage: NEAR_RIBBON }}
+        className={`absolute bottom-0 left-1/2 h-full origin-bottom ${RIBBON_W} ${
+          near ? `${NEAR_X} -rotate-[3deg]` : `${FAR_X} rotate-[9deg]`
+        }`}
+        style={{
+          backgroundImage: near ? `${INTO_HOLE}, ${NEAR_RIBBON}` : FAR_RIBBON,
+        }}
       />
     </div>
   );
 }
 
 /**
- * The hole the strap comes through. It sits on the badge, over the strap, and
- * shows the ribbons again inside it: lit at the lower edge where the loop
- * turns towards the viewer, lost in the dark at the top where it goes back.
+ * The hole the strap threads. The near ribbon goes into it from above; the
+ * far one shows inside it, coming through from behind the badge: lit at the
+ * lower edge where it turns towards the viewer, dark at the top.
  */
 function Slot() {
   const piece = `absolute inset-y-0 left-1/2 ${RIBBON_W}`;
@@ -179,11 +186,7 @@ function Slot() {
         className={`${piece} ${FAR_X}`}
         style={{ backgroundImage: `${IN_HOLE}, ${FAR_RIBBON}` }}
       />
-      <span
-        className={`${piece} ${NEAR_X}`}
-        style={{ backgroundImage: `${IN_HOLE}, ${NEAR_RIBBON}` }}
-      />
-      {/* The hole's own depth, over the ribbon pieces inside it. */}
+      {/* The hole's own depth, over the ribbon inside it. */}
       <span className="absolute inset-0 rounded-full shadow-[inset_0_2px_3px_rgba(0,0,0,0.9)]" />
     </span>
   );
@@ -208,6 +211,10 @@ const FAR_RIBBON = [
   "linear-gradient(90deg, rgba(0,0,0,0.3), transparent 35%, rgba(255,255,255,0.08))",
   "linear-gradient(#0b5b4e, #0b5b4e)",
 ].join(", ");
+
+/** The near ribbon's end, going down into the dark of the hole. */
+const INTO_HOLE =
+  "linear-gradient(to top, #0b0d0e, rgba(11,13,14,0.6) 4px, transparent 12px)";
 
 /** Inside the hole: dark where the strap goes back, lit at the lip. */
 const IN_HOLE =
