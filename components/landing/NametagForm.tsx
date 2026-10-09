@@ -226,9 +226,14 @@ const FAR_RIBBON = [
 const INTO_HOLE =
   "linear-gradient(to top, #0b0d0e, rgba(11,13,14,0.6) 4px, transparent 12px)";
 
-/** Inside the hole: dark where the strap goes back, lit at the lip. */
+/**
+ * The far ribbon inside the hole, given the same curl as the near one's end so
+ * the two read as one strap turning through the slot: shadowed under the
+ * hole's top edge, a soft highlight where the webbing rounds over, then
+ * falling into the same dark the near ribbon goes into at the bottom.
+ */
 const IN_HOLE =
-  "linear-gradient(to bottom, rgba(2,10,9,0.95) 15%, rgba(2,10,9,0.45) 60%, transparent)";
+  "linear-gradient(to bottom, rgba(2,10,9,0.7), transparent 30%, rgba(255,255,255,0.12) 45%, transparent 58%, rgba(11,13,14,0.6) 78%, #0b0d0e)";
 
 /**
  * A field as the badge sets one: the label above, a line beneath.
