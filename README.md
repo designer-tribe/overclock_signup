@@ -151,6 +151,17 @@ tepi kolom ke tepi container. Lebarnya `95%` persis rasio grid-nya (`1fr` dan
 kepanjangan lalu `overflow` untuk memotongnya — lebih buruk: `overflow: hidden`
 di ancestor bikin dia jadi scroll container dan form-nya berhenti sticky.
 
+Garis vertikalnya menempel di **band**, bukan di container atau kolom, supaya
+baru mulai setelah band foto habis. Dipasang lebih tinggi dia melintasi
+fotonya, dan hairline pucat di atas gambar gelap itu bukan garis grid — itu
+goresan.
+
+**Footer-nya** disalin dari screenshot overclockaccelerator.com. Label-nya
+benar; **path link-nya hasil inferensi** dari labelnya, karena domainnya
+diblokir network policy environment ini jadi href aslinya tidak bisa dibaca.
+Semuanya ada di `components/landing/footerNav.ts` — satu file untuk dikoreksi.
+Tanda tangan "Built by Tribe" di-set sebagai teks, bukan ditrace.
+
 **Form sticky-nya satu baris grid.** Kolom kiri adalah *satu* grid item tinggi
 berisi semua section; kolom kanan satu item pendek di sebelahnya. Karena
 sebaris, item kanan bisa `sticky` sementara barisnya scroll — dan dia wajib

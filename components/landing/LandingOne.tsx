@@ -4,6 +4,7 @@ import {
   LandingHeroBackdrop,
   LandingHeroCopy,
 } from "./LandingHero";
+import { LandingFooter } from "./LandingFooter";
 import { SpeakerBio } from "./SpeakerBio";
 import { Takeaways } from "./Takeaways";
 
@@ -63,16 +64,12 @@ export function LandingOne() {
       */}
       <LandingHeroBackdrop className="h-[620px]" />
 
-      <div
-        className={`relative mx-auto w-full max-w-[1500px] border-x ${RULE}`}
-      >
+      <div className="relative mx-auto w-full max-w-[1500px]">
         <LandingBrandBar className={`${BAND} py-7 lg:pr-14`} />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
           {/* Everything that scrolls, as one grid item. */}
-          <div
-            className={`relative lg:col-start-1 lg:row-start-1 lg:border-r ${RULE}`}
-          >
+          <div className="relative lg:col-start-1 lg:row-start-1">
             {/*
               justify-end with a minimum height rather than padding: it pins the
               copy to the foot of the photo band whatever the headline wraps to,
@@ -98,17 +95,25 @@ export function LandingOne() {
               />
             </div>
 
-            <div className={`${BAND_RULE} ${BAND} py-12`}>
-              <SpeakerBio />
-            </div>
+            {/*
+              The grid's vertical rules live here, on the bands, rather than on
+              the column or the container — so they begin where the photo band
+              ends. Carried any higher they cross the photograph, and a pale
+              hairline over a dark image is not a grid line, it is a scratch.
+            */}
+            <div className={`lg:border-x ${RULE}`}>
+              <div className={`${BAND_RULE} ${BAND} py-12`}>
+                <SpeakerBio />
+              </div>
 
-            <div className={`${BAND_RULE} ${BAND} py-12`}>
-              <Takeaways />
-            </div>
+              <div className={`${BAND_RULE} ${BAND} py-12`}>
+                <Takeaways />
+              </div>
 
-            {/* Closes the column: without it the last band has no bottom edge
-                and the grid stops mid-air. */}
-            <div className={`${BAND_RULE} h-20`} />
+              {/* Closes the column: without it the last band has no bottom edge
+                  and the grid stops mid-air. */}
+              <div className={`${BAND_RULE} h-20`} />
+            </div>
           </div>
 
           {/*
@@ -122,6 +127,10 @@ export function LandingOne() {
           </div>
         </div>
       </div>
+
+      {/* Outside the container: the footer is a black panel edge to edge, and
+          it is also where the sticky column's row finally ends. */}
+      <LandingFooter />
     </main>
   );
 }
