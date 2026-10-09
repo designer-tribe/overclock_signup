@@ -1,3 +1,6 @@
+import Image from "next/image";
+import portrait from "@/assets/ahmed-haque.png";
+
 /**
  * The speaker: a teal card carrying the portrait and name, with the biography
  * running underneath it.
@@ -18,19 +21,30 @@ export function SpeakerBio({ className = "" }: { className?: string }) {
         the same one the submit button uses, deeper here because the block is
         an order of magnitude larger and 4px would read as a printing slip.
       */}
-      <div className="flex items-center gap-5 bg-teal p-5 shadow-[0_6px_0_0_var(--color-ink)] sm:gap-6 sm:p-6">
-        {/* PLACEHOLDER — awaiting the supplied portrait. Initials rather than a
-            grey box or a generic avatar: at this size it reads as a considered
-            stand-in rather than a missing image, and it holds the exact
-            footprint the photograph will take. */}
-        <div
-          className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center bg-ink/25 font-serif text-xl text-white/80 sm:h-20 sm:w-20"
-          aria-hidden
-        >
-          AH
+      {/*
+        No height of its own: the portrait is the tallest thing in it, so it
+        sets the card's height and fills it edge to edge. Given a minimum
+        instead, the cutout floats in a band of teal with his head short of the
+        top, which is not how the comp has him.
+      */}
+      <div className="flex items-stretch bg-teal shadow-[0_6px_0_0_var(--color-ink)]">
+        {/*
+          The portrait is a cutout on transparency, so the teal is what shows
+          behind him and the block needs no padding of its own — he stands on
+          the card's own edges. `object-bottom` keeps his shoulders on the
+          bottom edge whatever height the text gives the card; anchored to the
+          centre he floats, and anchored to the top he is cropped at the chin.
+        */}
+        <div className="w-32 shrink-0 self-end sm:w-40">
+          <Image
+            src={portrait}
+            alt=""
+            sizes="(min-width: 640px) 160px, 128px"
+            className="h-auto w-full"
+          />
         </div>
 
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col justify-center p-5 pl-4 sm:p-6 sm:pl-5">
           <h2
             id="speaker-name"
             className="font-serif text-xl leading-tight text-white sm:text-2xl"

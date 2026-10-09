@@ -56,42 +56,62 @@ const BAND = "px-6 sm:px-10 lg:pl-14 lg:pr-10";
 
 export function LandingOne() {
   return (
-    <main className="relative min-h-dvh bg-paper text-ink">
-      {/*
-        620px exactly, as specified. The hero block's minimum below is sized
-        against it so the copy lands near the foot of the band and the first
-        rule falls clear of it — change one and check the other.
-      */}
-      <LandingHeroBackdrop className="h-[620px]" />
+    /*
+      Three numbers the page is built from, as variables rather than as values
+      repeated down the file. The band is 620px, as specified; the brand bar
+      takes a fixed slice off the top of it; and the copy block takes what is
+      left, so it ends exactly where the photograph does. The cell below is the
+      gap between the foot of the band and the first rule, and the accent block
+      fills it — which is the only way that block can sit flush against the
+      photograph without someone re-deriving the arithmetic by hand every time
+      the lockups change size.
+    */
+    <main
+      className="relative min-h-dvh bg-paper text-ink"
+      style={
+        {
+          "--band": "620px",
+          "--bar": "5.5rem",
+          "--cell": "4.75rem",
+        } as React.CSSProperties
+      }
+    >
+      <LandingHeroBackdrop className="h-[var(--band)]" />
 
       <div className="relative mx-auto w-full max-w-[1500px]">
-        <LandingBrandBar className={`${BAND} py-7 lg:pr-14`} />
+        <LandingBrandBar
+          className={`${BAND} h-[var(--bar)] lg:pr-14`}
+        />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
           {/* Everything that scrolls, as one grid item. */}
           <div className="relative lg:col-start-1 lg:row-start-1">
             {/*
-              justify-end with a minimum height rather than padding: it pins the
-              copy to the foot of the photo band whatever the headline wraps to,
-              which padding alone would not — a third line would push the copy
-              off the bottom of the band instead of growing upward into it.
+              The rest of the band, after the brand bar. justify-end with a
+              minimum height rather than padding: it pins the copy to the foot
+              of the photograph whatever the headline wraps to, which padding
+              alone would not — a third line would push the copy off the bottom
+              of the band instead of growing upward into it.
             */}
             <div
-              className={`relative flex min-h-[36rem] flex-col justify-end pb-24 lg:min-h-[38rem] lg:pb-28 ${BAND}`}
+              className={`flex min-h-[calc(var(--band)-var(--bar))] flex-col justify-end pb-9 ${BAND}`}
             >
               <LandingHeroCopy />
+            </div>
 
-              {/*
-                The accent block, filling the gutter cell between the foot of
-                the photo band and the first rule. `left-full` puts its left
-                edge on the column rule, and the small negative shift straddles
-                it the way the comp does — a few pixels into the column, the
-                rest across the gutter, stopping just short of the form card.
-                lg-only: below lg there is no gutter for it to sit in.
-              */}
+            {/*
+              The cell between the foot of the photograph and the first rule.
+              The accent block fills it top to bottom, so it meets the
+              photograph with no gap. `left-full` puts its left edge on the
+              column rule and the small negative shift straddles it the way the
+              comp does — a few pixels into the column, the rest across the
+              gutter, stopping short of the form card. lg-only: below lg there
+              is no gutter for it to sit in.
+            */}
+            <div className="relative h-[var(--cell)]">
               <span
                 aria-hidden
-                className="absolute bottom-0 left-full hidden h-11 w-11 -translate-x-1.5 bg-rust lg:block"
+                className="absolute inset-y-0 left-full hidden w-11 -translate-x-1.5 bg-rust lg:block"
               />
             </div>
 

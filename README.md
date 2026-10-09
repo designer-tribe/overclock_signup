@@ -125,22 +125,30 @@ Tidak ada komponen atau action yang perlu disentuh.
 
 ## Landing V1
 
-**Aset yang masih placeholder** — ketiganya sudah dijanjikan, strukturnya
-dibangun duluan supaya tinggal tukar:
+**Aset.** Tiga sudah masuk, satu belum:
 
-- **Foto hero** → sementara pakai `assets/variation-two-bg-2.webp` (foto
-  workshop hitam-putih) dengan filter sepia agar hangat seperti comp. Begitu
-  foto aslinya masuk, ganti import-nya **dan buang filternya** — foto yang
-  sudah di-grade tidak boleh di-grade dua kali.
-- **Potret Ahmed Haque** → blok inisial "AH" dengan footprint persis sama.
-- **Logo VYOND** → kotak putus-putus. Sengaja tidak digambar: itu mark pihak
-  lain, menebaknya lebih buruk daripada kosong.
-- **Take-away file** → belum dijanjikan. `Takeaways` menerima prop `fileHref`;
-  tanpa itu barisnya dirender sebagai teks biasa, bukan link mati.
+- `assets/landing-hero.webp` — foto hero. **Sudah di-grade hangat dari
+  sananya, jangan dikasih filter lagi.** File aslinya punya alpha vignette
+  lembut di tiga sisi (di-export untuk penempatan mengambang); di sini sudah
+  di-crop ke area fotonya yang solid, karena band full-bleed bertepi keras
+  tidak punya apa-apa untuk ditumpuki fade selain halaman itu sendiri.
+- `assets/ahmed-haque.png` — cutout beralpha, jadi teal-nya yang terlihat di
+  belakangnya. Dia yang menentukan tinggi kartu, bukan sebaliknya.
+- `assets/vyond.png` — di-trim ke mark-nya saja, supaya tingginya bisa diatur
+  terhadap lockup Overclock, bukan terhadap canvas yang sudah bawa padding.
+- **Take-away file** → belum ada. `Takeaways` menerima prop `fileHref`; tanpa
+  itu barisnya dirender sebagai teks biasa, bukan link mati.
 
-**Banner-nya 620px pas**, dan `min-height` blok hero diukur terhadap angka itu
-supaya copy mendarat dekat kaki band (36px di atasnya) dan garis pertama jatuh
-bersih di bawahnya (76px). Ubah satu, cek yang lain.
+Kontras di atas band (diukur dari piksel render, persentil ke-95): headline
+putih 14,7:1, aksen teal 7,4:1, standfirst 16,4:1, lockup putih di atas 6,5:1.
+
+**Banner-nya 620px pas.** Tiga angka yang membentuk halamannya — tinggi band,
+tinggi brand bar, dan tinggi sel di bawah band — ditaruh sebagai CSS variable
+di `<main>` (`--band`, `--bar`, `--cell`), bukan nilai yang diulang-ulang.
+Blok copy-nya `calc(var(--band) - var(--bar))`, jadi dia berakhir persis di
+kaki foto; sel di bawahnya diisi penuh blok oranye, jadi kotaknya menempel
+tanpa celah ke fotonya. Tanpa itu, angkanya harus diturunkan ulang dengan
+tangan setiap kali ukuran lockup berubah.
 
 **Grid-nya digambar, bukan cuma diimplikasikan.** Garisnya `border` di elemen
 asli, bukan layer dekoratif, supaya tidak pernah meleset dari konten yang
