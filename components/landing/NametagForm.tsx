@@ -54,12 +54,12 @@ export function NametagForm({ className = "" }: { className?: string }) {
     <div ref={root} className={`relative mx-auto max-w-[30rem] ${className}`}>
       <Strap />
 
-      <div className="relative rounded-2xl border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
+      <div className="relative rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
         {/* The slot the strap feeds through. Above the strap in the stack, so
             the ribbon's end disappears into it rather than lying on top. */}
         <span
           aria-hidden
-          className="absolute top-4 left-1/2 z-20 h-3 w-16 -translate-x-1/2 rounded-full bg-ink/85 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+          className="absolute top-4 left-1/2 z-20 h-3 w-20 -translate-x-1/2 rounded-full bg-ink/85 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
         />
 
         {status === "success" ? (
@@ -126,30 +126,38 @@ export function NametagForm({ className = "" }: { className?: string }) {
 }
 
 /**
- * The lanyard: two ribbons meeting at the slot, fading out as they rise.
+ * The lanyard: two flat ribbons meeting at the slot and opening into a V as
+ * they rise, lit where they meet the badge and dissolving upwards.
+ *
+ * The two are deliberately unequal — the near side of the loop wide and
+ * bright, the far side narrower, dimmer and leaning further out — which is
+ * what makes it read as one loop seen at an angle rather than two sticks.
  *
  * The fade is what lets it run "off the page" at any height. On a phone the
  * badge sits far down the page and a hard-topped strap would start in mid-air
  * over the content above; faded, it simply comes from somewhere above.
  */
 function Strap() {
+  // Vertical only: a flat ribbon, not a tube, so no shading across its width.
   const ribbon =
-    "absolute bottom-0 left-1/2 h-full w-7 origin-bottom bg-[linear-gradient(90deg,#0a4f44,#13917b_45%,#0e6b5c_60%,#0a4f44)]";
+    "absolute bottom-0 left-1/2 h-full origin-bottom bg-[linear-gradient(to_top,#17a88f,#0e6b5c_35%,rgba(14,107,92,0.35)_75%,transparent)]";
 
   return (
     <div
       aria-hidden
       // Bottom sits on the slot's centre: card top + 1rem + half the slot.
-      className="pointer-events-none absolute bottom-[calc(100%-1.375rem)] left-1/2 z-10 h-24 w-24 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_55%,transparent)] lg:h-[45vh]"
+      className="pointer-events-none absolute bottom-[calc(100%-1.375rem)] left-1/2 z-10 h-28 w-28 -translate-x-1/2"
     >
-      <span className={`${ribbon} -translate-x-[85%] -rotate-[4deg]`} />
-      <span className={`${ribbon} -translate-x-[15%] rotate-[4deg]`} />
+      <span className={`${ribbon} w-9 -translate-x-[96%] -rotate-[3deg]`} />
+      <span
+        className={`${ribbon} w-6 translate-x-[14%] rotate-[9deg] opacity-70`}
+      />
     </div>
   );
 }
 
 /**
- * A field as the badge sets one: the label above, a filled box beneath.
+ * A field as the badge sets one: the label above, a line beneath.
  * Same contract as the card's `Field`, so `SignupFields` does not care which
  * of the two it is handed. The hint becomes the placeholder here, because
  * with the label outside the box there is room for an example inside it.
@@ -168,7 +176,7 @@ function BadgeField({
     <div>
       <label
         htmlFor={id}
-        className="mb-1.5 block font-sans text-[0.8rem] font-medium text-ink/80"
+        className="block font-serif text-[0.8rem] text-ink/80"
       >
         {label}
         {required && <span className="text-flag"> *</span>}

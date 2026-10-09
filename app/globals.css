@@ -119,17 +119,17 @@ body {
   }
 
   /*
-   * The nametag's controls: a filled, rounded box with the label printed
-   * above it rather than inside. Lighter than the badge so the box reads as
-   * a place to write, with a hairline edge so it still holds its shape on a
-   * surface that close in tone.
+   * The nametag's controls: a line to write on, printed straight onto the
+   * badge, with the label above it. No box — the badge itself is the surface.
+   * The focus state thickens the line rather than adding a ring, because a
+   * ring would draw the box this treatment is avoiding.
    */
   .badge-control {
     width: 100%;
-    border-radius: 0.6rem;
-    border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
-    background-color: color-mix(in oklab, white 55%, var(--color-badge));
-    padding: 0.62rem 0.9rem;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 55%, transparent);
+    background-color: transparent;
+    padding: 0.3rem 0 0.4rem;
     font-family: var(--font-sans), system-ui, sans-serif;
     font-size: 0.92rem;
     color: var(--color-ink);
@@ -140,16 +140,17 @@ body {
   }
 
   .badge-control::placeholder {
-    color: color-mix(in oklab, var(--color-ink) 42%, transparent);
+    color: color-mix(in oklab, var(--color-ink) 35%, transparent);
   }
 
   .badge-control:hover {
-    border-color: color-mix(in oklab, var(--color-ink) 28%, transparent);
+    border-bottom-color: var(--color-ink);
   }
 
+  /* Inset shadow, not a thicker border, so the text does not shift by 1px. */
   .badge-control:focus {
-    border-color: var(--color-teal);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-teal) 22%, transparent);
+    border-bottom-color: var(--color-teal);
+    box-shadow: inset 0 -1px 0 var(--color-teal);
   }
 
   .badge-control[aria-invalid="true"] {
