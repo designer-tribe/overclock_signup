@@ -155,9 +155,14 @@ function Strap({ side }: { side: "near" | "far" }) {
 
         The near ribbon ends at the hole's centre line, darkening into it; the
         far one ends behind the badge, level with the hole's lip.
+
+        The near ribbon casts a shadow in two layers, both thrown down and to
+        the right: a tight, dark contact shadow right at its edge, and a wide
+        soft one. That falls across the far ribbon beside it and onto the
+        badge, which is what puts the far ribbon visibly behind the near one.
       */
       className={`pointer-events-none absolute left-1/2 h-40 w-28 -translate-x-1/2 lg:h-[100vh] ${
-        near ? "bottom-[calc(100%-1.4rem)] z-20 drop-shadow-[1px_2px_2px_rgba(0,0,0,0.22)]" : "bottom-[calc(100%-1.75rem)] z-0"
+        near ? "bottom-[calc(100%-1.4rem)] z-20 [filter:drop-shadow(3px_1px_2px_rgba(0,0,0,0.55))_drop-shadow(10px_4px_12px_rgba(0,0,0,0.5))]" : "bottom-[calc(100%-1.75rem)] z-0"
       }`}
     >
       <span
