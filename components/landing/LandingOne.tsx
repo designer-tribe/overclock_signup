@@ -22,9 +22,9 @@ import { Takeaways } from "./Takeaways";
  * so the form column starts at the very top of the page and overlaps it, as
  * the comp has it.
  *
- * Below lg the columns stack and the form simply follows the content. Sticking
- * on a short screen means a card that covers most of the viewport the whole
- * way down the page.
+ * Below lg the columns stack, with the form straight under the hero copy (see
+ * the `contents` note below), and it does not stick: on a short screen that
+ * would be a card covering most of the viewport the whole way down the page.
  */
 
 /** The comp draws its modular grid. Every rule on the page is this one line. */
@@ -86,8 +86,13 @@ export function LandingOne() {
         />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
-          {/* Everything that scrolls, as one grid item. */}
-          <div className="relative lg:col-start-1 lg:row-start-1">
+          {/*
+            Everything that scrolls, as one grid item — from lg. Below lg it is
+            `display: contents`, so its blocks become grid items of their own
+            and the form can be ordered in between them: straight under the
+            hero copy, rather than after every section on the page.
+          */}
+          <div className="contents lg:relative lg:col-start-1 lg:row-start-1 lg:block">
             {/*
               The rest of the band, after the brand bar. justify-end with a
               minimum height rather than padding: it pins the copy to the foot
@@ -96,7 +101,7 @@ export function LandingOne() {
               of the band instead of growing upward into it.
             */}
             <div
-              className={`flex min-h-[calc(var(--band)-var(--bar))] flex-col justify-end pb-9 ${BAND}`}
+              className={`order-1 flex min-h-[calc(var(--band)-var(--bar))] flex-col justify-end pb-9 ${BAND}`}
             >
               <LandingHeroCopy />
             </div>
@@ -110,7 +115,7 @@ export function LandingOne() {
               gutter, stopping short of the form card. lg-only: below lg there
               is no gutter for it to sit in.
             */}
-            <div className="relative h-[var(--cell)]">
+            <div className="relative order-3 h-[var(--cell)]">
               <span
                 aria-hidden
                 className="absolute inset-y-0 left-full hidden w-[var(--cell)] -translate-x-1.5 bg-rust lg:block"
@@ -123,7 +128,7 @@ export function LandingOne() {
               ends. Carried any higher they cross the photograph, and a pale
               hairline over a dark image is not a grid line, it is a scratch.
             */}
-            <div className={`lg:border-x ${RULE}`}>
+            <div className={`order-3 lg:border-x ${RULE}`}>
               <div className={`${BAND_RULE} ${BAND} py-12`}>
                 <SpeakerBio />
               </div>
@@ -143,7 +148,7 @@ export function LandingOne() {
             `self-start` is load-bearing — see the note above.
           */}
           <div
-            className={`px-6 pb-16 sm:px-10 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-8 lg:self-start lg:px-10 lg:pb-0`}
+            className={`order-2 px-6 pt-10 sm:px-10 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-8 lg:self-start lg:px-10 lg:pt-0`}
           >
             <NametagForm />
           </div>
