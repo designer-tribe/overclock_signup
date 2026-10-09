@@ -146,9 +146,15 @@ export function LandingOne() {
           {/*
             The sticky column. `top` clears the band's own breathing room, and
             `self-start` is load-bearing — see the note above.
+
+            Below lg this column starts exactly at the photograph's bottom
+            edge, and the clip-path cuts the badge's strap off flat there, so
+            it reads as running up behind the photo. Top edge only: the other
+            three insets are pushed far out so the badge's shadow is kept.
+            Not `overflow: hidden`, which would also stop the column sticking.
           */}
           <div
-            className={`order-2 px-6 pt-10 sm:px-10 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-8 lg:self-start lg:px-10 lg:pt-0`}
+            className={`order-2 px-6 pt-10 sm:px-10 max-lg:[clip-path:inset(0_-100vw_-100vh_-100vw)] lg:col-start-2 lg:row-start-1 lg:sticky lg:top-8 lg:self-start lg:px-10 lg:pt-0`}
           >
             <NametagForm />
           </div>

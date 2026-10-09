@@ -81,10 +81,11 @@ export function LandingTwo() {
             <LandingHeroCopy />
           </div>
 
-          {/* The same badge as V1, at V1's width. The wrapper is the badge's
+          {/* The same badge as V1, at V1's width. Below lg, clipped at the
+              top as V1's is, so the strap stops at the photograph's edge. The wrapper is the badge's
               own width, so the steps hang off the badge's edge rather than
               the column's when the column is the wider of the two. */}
-          <div className="pt-10 lg:pt-[var(--form-top)]">
+          <div className="pt-10 lg:pt-[var(--form-top)] max-lg:[clip-path:inset(0_-100vw_-100vh_-100vw)]">
             <div className="relative mx-auto max-w-[30rem]">
               <PixelSteps />
               <NametagForm />

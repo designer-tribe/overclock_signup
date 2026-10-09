@@ -146,15 +146,16 @@ function Strap({ side }: { side: "near" | "far" }) {
     <div
       aria-hidden
       /*
-        Tall enough on desktop to always run off the top of the screen, so it
-        needs no fade. On a phone the badge sits far down the page, under the
-        copy; a strap that tall would cross the copy, so there it is short and
-        fades out rather than starting in mid-air with a hard edge.
+        Tall enough on desktop to always run off the top of the screen. On a
+        phone the badge sits under the hero copy, and a strap that tall would
+        cross it — so there it is shorter, and the page clips it flat at the
+        photograph's bottom edge (see the form wrappers in LandingOne and
+        LandingTwo), as if it ran up behind the photo. No fade either way.
 
         The near ribbon ends at the hole's centre line, darkening into it; the
         far one ends behind the badge, level with the hole's lip.
       */
-      className={`pointer-events-none absolute left-1/2 h-24 w-28 -translate-x-1/2 [mask-image:linear-gradient(to_top,black_40%,transparent)] lg:h-[100vh] lg:[mask-image:none] ${
+      className={`pointer-events-none absolute left-1/2 h-40 w-28 -translate-x-1/2 lg:h-[100vh] ${
         near ? "bottom-[calc(100%-1.45rem)] z-20 drop-shadow-[1px_2px_2px_rgba(0,0,0,0.22)]" : "bottom-[calc(100%-1.75rem)] z-0"
       }`}
     >
