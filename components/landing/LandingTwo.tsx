@@ -104,6 +104,7 @@ export function LandingTwo() {
               takeaways as you plan for your teams!
             </p>
             <FileRow className="mt-12 max-w-[27.5rem] lg:mt-20" />
+            <FileRow className="mt-5 max-w-[27.5rem]" kind="download" />
           </section>
 
           <section aria-labelledby="v2-speaker-name">
