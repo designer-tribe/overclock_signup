@@ -119,32 +119,41 @@ body {
   }
 
   /*
-   * The nametag's controls. No surface of their own and no overlay label —
-   * the badge row draws the rule beneath them and prints the label above, so
-   * the control is only the line you write on.
+   * The nametag's controls: a filled, rounded box with the label printed
+   * above it rather than inside. Lighter than the badge so the box reads as
+   * a place to write, with a hairline edge so it still holds its shape on a
+   * surface that close in tone.
    */
   .badge-control {
     width: 100%;
-    background-color: transparent;
-    padding: 0.3rem 0 0;
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 1.05rem;
+    border-radius: 0.6rem;
+    border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+    background-color: color-mix(in oklab, white 55%, var(--color-badge));
+    padding: 0.62rem 0.9rem;
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.92rem;
     color: var(--color-ink);
     outline: none;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
   }
 
   .badge-control::placeholder {
-    color: transparent;
+    color: color-mix(in oklab, var(--color-ink) 42%, transparent);
+  }
+
+  .badge-control:hover {
+    border-color: color-mix(in oklab, var(--color-ink) 28%, transparent);
   }
 
   .badge-control:focus {
-    /* The row's own rule cannot take the focus ring without moving the text,
-       so the control carries it as a box-shadow sitting on that rule. */
-    box-shadow: 0 2px 0 0 var(--color-teal);
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-teal) 22%, transparent);
   }
 
   .badge-control[aria-invalid="true"] {
-    box-shadow: 0 2px 0 0 var(--color-flag);
+    border-color: var(--color-flag);
   }
 
   .badge-control:disabled {

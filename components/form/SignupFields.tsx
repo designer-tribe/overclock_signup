@@ -35,7 +35,7 @@ export function SignupFields({
 }: SignupFieldsProps) {
   return (
     <>
-      <Field label="Name" error={errors.name?.message}>
+      <Field label="Name" hint="Your full name" error={errors.name?.message}>
         {(props) => (
           <input
             {...props}
@@ -47,7 +47,7 @@ export function SignupFields({
         )}
       </Field>
 
-      <Field label="Email" required error={errors.email?.message}>
+      <Field label="Email" hint="you@company.com" required error={errors.email?.message}>
         {(props) => (
           <input
             {...props}
@@ -60,7 +60,7 @@ export function SignupFields({
       </Field>
 
       <div className="grid gap-2.5 sm:grid-cols-2">
-        <Field label="Organization" error={errors.organization?.message}>
+        <Field label="Organization" hint="Company name" error={errors.organization?.message}>
           {(props) => (
             <input
               {...props}
@@ -72,7 +72,7 @@ export function SignupFields({
           )}
         </Field>
 
-        <Field label="Job title" error={errors.jobTitle?.message}>
+        <Field label="Job title" hint="Your role" error={errors.jobTitle?.message}>
           {(props) => (
             <input
               {...props}
@@ -87,6 +87,7 @@ export function SignupFields({
 
       <Field
         label="What sparked your interest today?"
+        hint="A sentence or two is plenty"
         error={errors.interest?.message}
       >
         {(props) => (
@@ -104,20 +105,29 @@ export function SignupFields({
 }
 
 /** The submit button, in the design's hard-offset treatment. */
+const BUTTON_STYLES = {
+  // The hard offset shadow is the design's "sitting on the page" treatment;
+  // pressing collapses it rather than fading it.
+  offset:
+    "bg-teal px-6 py-4 shadow-[0_4px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_2px_0_0_var(--color-ink)] active:translate-y-[4px] active:shadow-none",
+  // The badge's: rounded and lit from above, like the rest of that card.
+  soft: "rounded-lg bg-[linear-gradient(180deg,#14826f,var(--color-teal))] px-6 py-3.5 shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_6px_16px_-6px_rgba(14,107,92,0.7)] transition-[filter,transform] duration-150 hover:brightness-110 active:translate-y-px",
+} as const;
+
 export function SubmitButton({
   sending,
+  variant = "offset",
   className = "",
 }: {
   sending: boolean;
+  variant?: keyof typeof BUTTON_STYLES;
   className?: string;
 }) {
   return (
     <button
       type="submit"
       disabled={sending}
-      // The hard offset shadow is the design's "sitting on the page"
-      // treatment; pressing collapses it rather than fading it.
-      className={`group flex w-full items-center justify-center gap-2.5 bg-teal px-6 py-4 text-[0.95rem] font-medium text-white shadow-[0_4px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_2px_0_0_var(--color-ink)] active:translate-y-[4px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
+      className={`group flex w-full items-center justify-center gap-2.5 text-[0.95rem] font-medium text-white disabled:cursor-not-allowed disabled:opacity-70 ${BUTTON_STYLES[variant]} ${className}`}
     >
       {sending ? "Sending…" : "Request a conversation"}
       {!sending && (

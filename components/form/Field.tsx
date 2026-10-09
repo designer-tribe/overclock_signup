@@ -8,6 +8,12 @@ type FieldProps = {
   required?: boolean;
   error?: string;
   /**
+   * Example text for surfaces that show the label outside the control and so
+   * have room for a placeholder. This one draws the label inside the control
+   * and ignores it.
+   */
+  hint?: string;
+  /**
    * Render function, so the generated ids can be handed to the control. A plain
    * `children` node would mean every caller repeating `useId` and the
    * `aria-describedby` bookkeeping by hand — which is the part that silently
