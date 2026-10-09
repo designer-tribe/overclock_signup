@@ -121,15 +121,25 @@ export function LandingOne() {
               The cell between the foot of the photograph and the first rule.
               The accent block fills it top to bottom, so it meets the
               photograph with no gap. `left-full` puts its left edge on the
-              column rule and the small negative shift straddles it the way the
-              comp does — a few pixels into the column, the rest across the
-              gutter, stopping short of the form card. lg-only: below lg there
-              is no gutter for it to sit in.
+              column rule, so the whole block sits to the right of the line,
+              in the gutter.
+
+              A second, teal block steps down and right from it, one cell over
+              and one cell down: corner to corner, the same staircase V2 uses.
+              It sits on the first rule, so it is raised over that line (z-1).
+              lg-only: below lg there is no gutter for either. The teal one
+              waits until 1350px: it needs two cells of gutter before the
+              badge's left edge, and narrower than that it would sit partly
+              behind the badge.
             */}
             <div className="relative order-3 h-[var(--cell)]">
               <span
                 aria-hidden
-                className="absolute inset-y-0 left-full hidden w-[var(--cell)] -translate-x-1.5 bg-rust lg:block"
+                className="absolute inset-y-0 left-full hidden w-[var(--cell)] bg-rust lg:block"
+              />
+              <span
+                aria-hidden
+                className="absolute top-full left-[calc(100%+var(--cell))] z-[1] hidden h-[var(--cell)] w-[var(--cell)] bg-teal min-[1350px]:block"
               />
             </div>
 
