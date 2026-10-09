@@ -17,7 +17,8 @@ export function Takeaways({
 }) {
   return (
     <section className={className}>
-      <div className="bg-sand p-6 sm:p-8">
+      {/* Same hard offset shadow as the speaker block — see the note there. */}
+      <div className="bg-sand p-6 shadow-[0_6px_0_0_var(--color-ink)] sm:p-8">
         <h2 className="max-w-sm font-serif text-xl leading-snug font-semibold text-ink sm:text-[1.6rem]">
           More People Leaders Want a Say in AI Strategy
         </h2>
@@ -32,7 +33,7 @@ export function Takeaways({
         </p>
       </div>
 
-      <FileRow className="mt-5" href={fileHref} />
+      <FileRow className="mt-8" href={fileHref} />
     </section>
   );
 }
@@ -40,18 +41,20 @@ export function Takeaways({
 function FileRow({ className = "", href }: { className?: string; href?: string }) {
   const content = (
     <>
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-ink text-white">
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
-          <path
-            d="M6 3.5h7.5L18 8v12.5H6V3.5Z"
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-ink text-white">
+        <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" aria-hidden>
+          <rect
+            x="3"
+            y="5.5"
+            width="18"
+            height="13"
             stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
+            strokeWidth="1.7"
           />
           <path
-            d="M13.25 3.75V8.25H17.75"
+            d="M3.5 6.5 12 13l8.5-6.5"
             stroke="currentColor"
-            strokeWidth="1.6"
+            strokeWidth="1.7"
             strokeLinejoin="round"
           />
         </svg>
@@ -63,7 +66,7 @@ function FileRow({ className = "", href }: { className?: string; href?: string }
   );
 
   const shell =
-    "flex items-center gap-4 border border-ink/15 bg-white px-4 py-3 text-ink";
+    "flex items-center gap-4 border border-rule bg-white px-4 py-3 text-ink shadow-[0_6px_0_0_var(--color-ink)]";
 
   if (!href) {
     // No file yet. Dimmed so the state is visible in review rather than

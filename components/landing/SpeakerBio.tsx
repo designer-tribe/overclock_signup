@@ -13,7 +13,12 @@ const ROLE = "Co-Founder and CEO, Overclock Accelerator";
 export function SpeakerBio({ className = "" }: { className?: string }) {
   return (
     <section className={className} aria-labelledby="speaker-name">
-      <div className="flex items-center gap-5 bg-teal p-5 sm:gap-6 sm:p-6">
+      {/*
+        The hard offset shadow is the brand's "sitting on the page" treatment —
+        the same one the submit button uses, deeper here because the block is
+        an order of magnitude larger and 4px would read as a printing slip.
+      */}
+      <div className="flex items-center gap-5 bg-teal p-5 shadow-[0_6px_0_0_var(--color-ink)] sm:gap-6 sm:p-6">
         {/* PLACEHOLDER — awaiting the supplied portrait. Initials rather than a
             grey box or a generic avatar: at this size it reads as a considered
             stand-in rather than a missing image, and it holds the exact
@@ -38,7 +43,7 @@ export function SpeakerBio({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      <p className="mt-6 text-[0.95rem] leading-[1.75] text-ink/80">
+      <p className="mt-8 text-[0.95rem] leading-[1.75] text-ink/80">
         Ahmed Haque is the Co-Founder and CEO of the Overclock Accelerator, a
         training and consulting firm that helps organizations and executives
         navigate the changing AI landscape. Over the last decade, he has been a

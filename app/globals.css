@@ -27,6 +27,14 @@
      custom property. If it changes here, change it in ParticleMark too. */
   --color-void: #050505;
   --color-cream: #f3ece0;
+
+  /* The landing page's modular grid, drawn rather than implied: `rule` is the
+     hairline, `rust` the accent block that fills one cell of it. Both sampled
+     by eye from the comp — confirm against the brand palette. `rust` is a
+     warmer, more orange thing than `flag`, which leans red; they are not
+     interchangeable. */
+  --color-rule: #e3dfd6;
+  --color-rust: #c8481f;
 }
 
 html {

@@ -138,6 +138,19 @@ dibangun duluan supaya tinggal tukar:
 - **Take-away file** → belum dijanjikan. `Takeaways` menerima prop `fileHref`;
   tanpa itu barisnya dirender sebagai teks biasa, bukan link mati.
 
+**Banner-nya 620px pas**, dan `min-height` blok hero diukur terhadap angka itu
+supaya copy mendarat dekat kaki band (36px di atasnya) dan garis pertama jatuh
+bersih di bawahnya (76px). Ubah satu, cek yang lain.
+
+**Grid-nya digambar, bukan cuma diimplikasikan.** Garisnya `border` di elemen
+asli, bukan layer dekoratif, supaya tidak pernah meleset dari konten yang
+dipisahkannya. Tapi band-nya cuma selebar kolom kiri sementara di comp garisnya
+menyeberang seluruh halaman — makanya ada pseudo-element yang menyambung dari
+tepi kolom ke tepi container. Lebarnya `95%` persis rasio grid-nya (`1fr` dan
+`0.95fr`, tanpa gap); ubah rasionya, ubah ini juga. Alternatifnya — garis
+kepanjangan lalu `overflow` untuk memotongnya — lebih buruk: `overflow: hidden`
+di ancestor bikin dia jadi scroll container dan form-nya berhenti sticky.
+
 **Form sticky-nya satu baris grid.** Kolom kiri adalah *satu* grid item tinggi
 berisi semua section; kolom kanan satu item pendek di sebelahnya. Karena
 sebaris, item kanan bisa `sticky` sementara barisnya scroll — dan dia wajib
