@@ -52,8 +52,8 @@ export function LandingTwo() {
       {/*
         The figure on the branch, hanging off the page's left edge just under
         the photograph, as the comp has it — so it is placed against the page,
-        not the centred container. Its top sits a touch over the photograph's
-        edge so the branch reads as reaching out of it.
+        not the centred container. Its top sits exactly on the photograph's
+        bottom edge — under it, not over it.
 
         Decorative, and desktop only: below lg the form follows the copy
         directly and there is no free corner for it.
@@ -62,7 +62,7 @@ export function LandingTwo() {
         src={branch}
         alt=""
         sizes="352px"
-        className="pointer-events-none absolute top-[calc(var(--band)-0.75rem)] left-0 hidden h-auto w-[22rem] lg:block"
+        className="pointer-events-none absolute top-[var(--band)] left-0 hidden h-auto w-[22rem] lg:block"
       />
 
       <div className="relative mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-14">
