@@ -156,13 +156,12 @@ function Strap({ side }: { side: "near" | "far" }) {
         The near ribbon ends at the hole's centre line, darkening into it; the
         far one ends behind the badge, level with the hole's lip.
 
-        The near ribbon casts a shadow in two layers, both thrown down and to
-        the right: a tight, dark contact shadow right at its edge, and a wide
-        soft one. That falls across the far ribbon beside it and onto the
+        The near ribbon casts a shadow in two soft layers, both thrown down
+        and to the right, with no hard edge at the ribbon's side. That falls across the far ribbon beside it and onto the
         badge, which is what puts the far ribbon visibly behind the near one.
       */
       className={`pointer-events-none absolute left-1/2 h-40 w-28 -translate-x-1/2 lg:h-[100vh] ${
-        near ? "bottom-[calc(100%-1.4rem)] z-20 [filter:drop-shadow(3px_1px_2px_rgba(0,0,0,0.55))_drop-shadow(10px_4px_12px_rgba(0,0,0,0.5))]" : "bottom-[calc(100%-1.75rem)] z-0"
+        near ? "bottom-[calc(100%-1.4rem)] z-20 [filter:drop-shadow(4px_1px_6px_rgba(0,0,0,0.32))_drop-shadow(12px_4px_18px_rgba(0,0,0,0.32))]" : "bottom-[calc(100%-1.75rem)] z-0"
       }`}
     >
       <span
@@ -209,7 +208,9 @@ const NEAR_RIBBON = [
 
 const FAR_RIBBON = [
   WEAVE,
-  "linear-gradient(90deg, rgba(0,0,0,0.3), transparent 35%, rgba(255,255,255,0.08))",
+  // The near ribbon's shadow carried evenly across the whole width, darkest
+  // under it and easing off, so the far ribbon sits behind it end to end.
+  "linear-gradient(90deg, rgba(0,0,0,0.32), rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.08))",
   "linear-gradient(#0b5b4e, #0b5b4e)",
 ].join(", ");
 
