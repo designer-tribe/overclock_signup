@@ -132,8 +132,9 @@ export function NametagForm({ className = "" }: { className?: string }) {
  * Both sides of the strap are the same webbing, so the same width; the far
  * one is only a shade darker, being the back of the loop.
  *
- * FAR_X is shared with `Slot`, which shows the far ribbon again through the
- * hole: change one and the piece in the hole stops lining up.
+ * `Slot` sizes the loop inside the hole from these: its left edge is the near
+ * ribbon's (-RIBBON_W) and its right edge the far one's (FAR_X + RIBBON_W).
+ * Change a width or an offset here and change the loop there with it.
  */
 const RIBBON_W = "w-9"; // 2.25rem
 const NEAR_X = "-translate-x-full";
@@ -172,22 +173,25 @@ function Strap({ side }: { side: "near" | "far" }) {
 }
 
 /**
- * The hole the strap threads. The near ribbon goes into it from above; the
- * far one shows inside it, coming through from behind the badge: lit at the
- * lower edge where it turns towards the viewer, dark at the top.
+ * The hole the strap threads. Inside it is the bottom of the loop: one band
+ * of webbing, not two pieces, running from the near ribbon's outer edge to
+ * the far one's. The near ribbon comes down over the badge and ends on this
+ * band's upper half, so the strap reads as one ribbon going down in front,
+ * turning round the hole's lower lip, and climbing back up behind the badge.
  */
 function Slot() {
-  const piece = `absolute inset-y-0 left-1/2 ${RIBBON_W}`;
   return (
     <span
       aria-hidden
       className="absolute top-4 left-1/2 h-3.5 w-20 -translate-x-1/2 overflow-hidden rounded-full bg-[#0b0d0e] shadow-[0_1px_0_rgba(255,255,255,0.55)]"
     >
+      {/* From the near ribbon's left edge (-2.25rem) to the far one's right
+          edge (its 4% offset plus its width): both ribbons' footprint. */}
       <span
-        className={`${piece} ${FAR_X}`}
-        style={{ backgroundImage: `${IN_HOLE}, ${FAR_RIBBON}` }}
+        className="absolute inset-y-0 left-[calc(50%-2.25rem)] w-[calc(4.5rem+1.5px)]"
+        style={{ backgroundImage: LOOP }}
       />
-      {/* The hole's own depth, over the ribbon inside it. */}
+      {/* The hole's own depth, over the band inside it. */}
       <span className="absolute inset-0 rounded-full shadow-[inset_0_2px_3px_rgba(0,0,0,0.9)]" />
     </span>
   );
@@ -215,16 +219,22 @@ const FAR_RIBBON = [
 
 /** The near ribbon's end, going down into the dark of the hole. */
 const INTO_HOLE =
-  "linear-gradient(to top, #0b0d0e, rgba(11,13,14,0.6) 4px, transparent 12px)";
+  "linear-gradient(to top, rgba(2,10,9,0.45), transparent 9px)";
 
 /**
- * The far ribbon inside the hole, given the same curl as the near one's end so
- * the two read as one strap turning through the slot: shadowed under the
- * hole's top edge, a soft highlight where the webbing rounds over, then
- * falling into the same dark the near ribbon goes into at the bottom.
+ * The bottom of the loop, inside the hole. Top first:
+ *  - its curl: dark up under the hole's top edge, where the webbing goes back
+ *    behind the badge; a highlight low down, where it rounds over the lip
+ *    towards the viewer; shading again right at the lip as it turns under,
+ *  - the weave, carried through so it is the same webbing,
+ *  - its colour, the near ribbon's on the left blending into the far one's on
+ *    the right with no seam — one band, turning from front to back.
  */
-const IN_HOLE =
-  "linear-gradient(to bottom, rgba(2,10,9,0.7), transparent 30%, rgba(255,255,255,0.12) 45%, transparent 58%, rgba(11,13,14,0.6) 78%, #0b0d0e)";
+const LOOP = [
+  "linear-gradient(to bottom, rgba(2,10,9,0.85), rgba(2,10,9,0.3) 38%, transparent 55%, rgba(255,255,255,0.16) 74%, rgba(2,10,9,0.4))",
+  WEAVE,
+  "linear-gradient(90deg, #0f7563 30%, #0b5b4e 85%)",
+].join(", ");
 
 /**
  * A field as the badge sets one: the label above, a line beneath.
