@@ -1,3 +1,5 @@
+import Image from "next/image";
+import tribeSignature from "@/assets/tribe-signature.png";
 import {
   ENROL_HREF,
   EXPLORE_LINKS,
@@ -98,12 +100,13 @@ export function LandingFooter() {
 
             <p className="flex items-center gap-3 font-sans text-[0.8rem] tracking-[0.08em] text-white/85 uppercase">
               Built by
-              {/* PLACEHOLDER — the Tribe signature lockup. Set as type rather
-                  than traced: it is a handwritten mark and an approximation of
-                  someone's signature is worse than none. */}
-              <span className="font-serif text-[1.15rem] tracking-normal normal-case italic">
-                Tribe
-              </span>
+              {/* The Tribe signature, white on transparency. The file is
+                  trimmed to the mark, so its height sets its size directly. */}
+              <Image
+                src={tribeSignature}
+                alt="Tribe"
+                className="h-8 w-auto"
+              />
             </p>
           </div>
         </div>

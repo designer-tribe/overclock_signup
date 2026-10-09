@@ -175,7 +175,7 @@ goresan.
 benar; **path link-nya hasil inferensi** dari labelnya, karena domainnya
 diblokir network policy environment ini jadi href aslinya tidak bisa dibaca.
 Semuanya ada di `components/landing/footerNav.ts` — satu file untuk dikoreksi.
-Tanda tangan "Built by Tribe" di-set sebagai teks, bukan ditrace.
+Tanda tangan "Built by Tribe" memakai `assets/tribe-signature.png` (putih di atas transparan, tinggi 32px).
 
 **Formnya berbentuk nametag**: kepala badge berisi penerbit dan tanggalnya,
 lalu nama event, lalu baris-baris yang biasanya *dicetak* di badge jadi field
