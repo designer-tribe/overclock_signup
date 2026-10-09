@@ -1,37 +1,23 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
-import { signupSchema, type SignupInput } from "@/lib/schema";
-import { submitSignup } from "@/app/actions";
 import { Field } from "./Field";
+import { SignupFields, SubmitButton } from "./SignupFields";
+import { useSignupForm } from "./useSignupForm";
 
+/**
+ * The signup form as a card — the signup page's three variations.
+ *
+ * The landing page renders the same form as a nametag instead; both share
+ * `useSignupForm` for the logic and `SignupFields` for the controls, so the
+ * only thing that differs between them is the surface.
+ */
 export function SignupForm({ className = "" }: { className?: string }) {
   const root = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
-  const [formError, setFormError] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<SignupInput>({
-    resolver: zodResolver(signupSchema),
-    // Validate on blur rather than per keystroke — errors appearing mid-typing
-    // read as the form nagging.
-    mode: "onBlur",
-    defaultValues: {
-      name: "",
-      email: "",
-      organization: "",
-      jobTitle: "",
-      interest: "",
-    },
-  });
+  const { register, errors, onSubmit, status, sending, formError } =
+    useSignupForm();
 
   // Placeholder entrance, kept deliberately plain until the motion pass.
   useGSAP(
@@ -50,29 +36,6 @@ export function SignupForm({ className = "" }: { className?: string }) {
     },
     { scope: root },
   );
-
-  const onSubmit = async (values: SignupInput) => {
-    setStatus("sending");
-    setFormError(null);
-
-    const result = await submitSignup(values);
-
-    if (result.ok) {
-      setStatus("success");
-      return;
-    }
-
-    // Re-attach whatever the server rejected to the matching inputs.
-    if (result.fieldErrors) {
-      for (const [field, message] of Object.entries(result.fieldErrors)) {
-        setError(field as keyof SignupInput, { type: "server", message });
-      }
-    }
-    setFormError(result.message);
-    setStatus("idle");
-  };
-
-  const sending = status === "sending";
 
   // The card is a light surface wherever it is placed, so it states its own
   // colours rather than inheriting them. Variation 2 sets `text-white` on the
@@ -102,50 +65,13 @@ export function SignupForm({ className = "" }: { className?: string }) {
           </p>
 
           {/* noValidate: the browser's own bubbles would pre-empt our messages. */}
-          <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-7 space-y-2.5">
-            <Field label="Name" error={errors.name?.message}>
-              {(props) => (
-                <input {...props} {...register("name")} type="text" autoComplete="name" disabled={sending} />
-              )}
-            </Field>
-
-            <Field label="Email" required error={errors.email?.message}>
-              {(props) => (
-                <input {...props} {...register("email")} type="email" autoComplete="email" disabled={sending} />
-              )}
-            </Field>
-
-            <div className="grid gap-2.5 sm:grid-cols-2">
-              <Field label="Organization" error={errors.organization?.message}>
-                {(props) => (
-                  <input
-                    {...props}
-                    {...register("organization")}
-                    type="text"
-                    autoComplete="organization"
-                    disabled={sending}
-                  />
-                )}
-              </Field>
-
-              <Field label="Job title" error={errors.jobTitle?.message}>
-                {(props) => (
-                  <input
-                    {...props}
-                    {...register("jobTitle")}
-                    type="text"
-                    autoComplete="organization-title"
-                    disabled={sending}
-                  />
-                )}
-              </Field>
-            </div>
-
-            <Field label="What sparked your interest today?" error={errors.interest?.message}>
-              {(props) => (
-                <textarea {...props} {...register("interest")} rows={5} disabled={sending} className={`${props.className} resize-none`} />
-              )}
-            </Field>
+          <form onSubmit={onSubmit} noValidate className="mt-7 space-y-2.5">
+            <SignupFields
+              register={register}
+              errors={errors}
+              sending={sending}
+              Field={Field}
+            />
 
             {formError && (
               <p role="alert" className="pt-1 text-sm text-flag">
@@ -154,27 +80,7 @@ export function SignupForm({ className = "" }: { className?: string }) {
             )}
 
             <div className="pt-4">
-              <button
-                type="submit"
-                disabled={sending}
-                // The hard offset shadow is the design's "sitting on the page"
-                // treatment; pressing collapses it rather than fading it.
-                className="group flex w-full items-center justify-center gap-2.5 bg-teal px-6 py-4 text-[0.95rem] font-medium text-white shadow-[0_4px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-150 hover:translate-y-[2px] hover:shadow-[0_2px_0_0_var(--color-ink)] active:translate-y-[4px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {sending ? "Sending…" : "Request a conversation"}
-                {!sending && (
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    aria-hidden
-                  >
-                    <path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </button>
+              <SubmitButton sending={sending} />
             </div>
 
             <p className="pt-3 text-xs leading-relaxed text-ink/60">

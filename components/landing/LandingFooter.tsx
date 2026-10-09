@@ -30,19 +30,11 @@ export function LandingFooter() {
                 Know which Accelerator you want? Skip straight to enrollment.
               </p>
 
-              {/*
-                The same hard offset treatment as the rest of the brand, in
-                teal rather than ink — ink under a black panel would be
-                invisible, so the shadow is what the accent is doing here.
-              */}
-              <a
-                href={ENROL_HREF}
-                className="mt-7 inline-block border border-white px-7 py-3.5 font-sans text-[0.95rem] font-medium shadow-[0_5px_0_0_var(--color-teal-light)] transition-transform duration-150 hover:translate-y-[2px] hover:shadow-[0_3px_0_0_var(--color-teal-light)] focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
-              >
-                Enroll Here
-              </a>
-
-              <p className="mt-6">
+              {/* The Enroll Here button is deliberately gone: the page already
+                  asks for one thing, and a second call to action under the
+                  form competes with the form. The text link stays, since it
+                  goes somewhere else — to browse rather than to enrol. */}
+              <p className="mt-7">
                 {/* The arrow stays in the text flow rather than being a flex
                     sibling: as a sibling it gets pushed to the end of the line
                     when the label wraps, and ends up stranded on its own. */}

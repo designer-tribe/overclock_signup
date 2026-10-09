@@ -113,6 +113,40 @@ body {
     cursor: not-allowed;
   }
 
+  /*
+   * The nametag's controls. No surface of their own and no overlay label —
+   * the badge row draws the rule beneath them and prints the label above, so
+   * the control is only the line you write on.
+   */
+  .badge-control {
+    width: 100%;
+    background-color: transparent;
+    padding: 0.3rem 0 0;
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--color-ink);
+    outline: none;
+  }
+
+  .badge-control::placeholder {
+    color: transparent;
+  }
+
+  .badge-control:focus {
+    /* The row's own rule cannot take the focus ring without moving the text,
+       so the control carries it as a box-shadow sitting on that rule. */
+    box-shadow: 0 2px 0 0 var(--color-teal);
+  }
+
+  .badge-control[aria-invalid="true"] {
+    box-shadow: 0 2px 0 0 var(--color-flag);
+  }
+
+  .badge-control:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
   /* Sits on top of the control, so it must never swallow a click. */
   .field-label {
     position: absolute;

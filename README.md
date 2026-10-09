@@ -53,6 +53,12 @@ cp .env.example .env.local
 pnpm dev          # http://localhost:3000
 ```
 
+> **Kalau utility Tailwind baru tidak muncul, hapus `.next`.** Cache persisten
+> Turbopack bisa menyajikan CSS basi setelah `app/globals.css` diubah —
+> restart dev server saja tidak cukup, hash chunk-nya tetap sama. Gejalanya
+> khas: class-nya ada di DOM tapi `getComputedStyle` mengembalikan nilai
+> default. Sudah kena dua kali di proyek ini (`bg-rust`, lalu `.badge-control`).
+
 ```bash
 pnpm build        # build produksi
 pnpm lint
@@ -74,7 +80,8 @@ components/
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
   hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
   brand/Logo.tsx      Lockup Overclock (aset asli, di-inline)
-  form/               SignupForm · Field
+  form/               useSignupForm (logika) · SignupFields (kontrol) ·
+                      SignupForm (kartu) · Field
 providers/
   SmoothScrollProvider.tsx
 hooks/
@@ -169,6 +176,19 @@ benar; **path link-nya hasil inferensi** dari labelnya, karena domainnya
 diblokir network policy environment ini jadi href aslinya tidak bisa dibaca.
 Semuanya ada di `components/landing/footerNav.ts` — satu file untuk dikoreksi.
 Tanda tangan "Built by Tribe" di-set sebagai teks, bukan ditrace.
+
+**Formnya berbentuk nametag** yang menggantung di lanyard: strap bercetak,
+D-ring, clasp, lalu badge dengan lubang jepitan — dan baris-baris yang
+biasanya dicetak di badge jadi field yang kamu isi. Hardware-nya digambar
+datar, bukan dirender; mengejar mockup 3D di SVG menghasilkan setengah-render
+yang janggal dan berkelahi dengan sisa halaman.
+
+Logikanya **tidak diduplikasi**: `useSignupForm` memegang validasi, submit, dan
+pemasangan ulang error dari server; `SignupFields` memegang kelima kontrolnya
+beserta token `autoComplete`-nya. Yang berbeda cuma bingkainya — `SignupForm`
+(kartu, dipakai halaman Signup) dan `NametagForm` (badge, dipakai Landing).
+Kalau dua salinan dibiarkan, salah satunya cepat atau lambat jadi yang lupa
+memasang ulang field error.
 
 **Form sticky-nya satu baris grid.** Kolom kiri adalah *satu* grid item tinggi
 berisi semua section; kolom kanan satu item pendek di sebelahnya. Karena

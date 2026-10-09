@@ -1,10 +1,10 @@
-import { SignupForm } from "@/components/form/SignupForm";
 import {
   LandingBrandBar,
   LandingHeroBackdrop,
   LandingHeroCopy,
 } from "./LandingHero";
 import { LandingFooter } from "./LandingFooter";
+import { NametagForm } from "./NametagForm";
 import { SpeakerBio } from "./SpeakerBio";
 import { Takeaways } from "./Takeaways";
 
@@ -143,7 +143,7 @@ export function LandingOne() {
           <div
             className={`px-6 pb-16 sm:px-10 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-8 lg:self-start lg:px-10 lg:pb-0`}
           >
-            <SignupForm />
+            <NametagForm />
           </div>
         </div>
       </div>
