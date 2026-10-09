@@ -227,9 +227,10 @@ comp V2:
 - Kolom: dari `xl` kolom badge selebar badge (30rem, sama dengan V1) dan copy
   mengisi sisanya; di `lg` dibagi rata.
 
-**Aset yang belum ada:** ilustrasi ranting pohon dengan orang berbaring di
-bawah hero kiri. Tempatnya sudah kosong di layout; tinggal ditambahkan saat
-file-nya dikirim.
+**Ilustrasi** `assets/landing-v2-branch.png` (730×318, PNG transparan) —
+figur di ranting, menempel di tepi kiri halaman tepat di bawah foto. Hanya di
+`lg` ke atas; ditampilkan 352px lebar, jadi file ini cukup untuk layar 2x.
+Kalau mau lebih tajam di layar 3x, kirim versi ≥1100px.
 
 ## Partikel logomark (variation 3)
 
