@@ -35,6 +35,11 @@
      interchangeable. */
   --color-rule: #e3dfd6;
   --color-rust: #c8481f;
+
+  /* The landing page's badge. Warmer than `sand`, which is the signup card's
+     surface — close enough to look like a mistake if the two are swapped, so
+     they are named apart. */
+  --color-badge: #e9decc;
 }
 
 html {

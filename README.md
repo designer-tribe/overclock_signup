@@ -177,11 +177,12 @@ diblokir network policy environment ini jadi href aslinya tidak bisa dibaca.
 Semuanya ada di `components/landing/footerNav.ts` — satu file untuk dikoreksi.
 Tanda tangan "Built by Tribe" di-set sebagai teks, bukan ditrace.
 
-**Formnya berbentuk nametag** yang menggantung di lanyard: strap bercetak,
-D-ring, clasp, lalu badge dengan lubang jepitan — dan baris-baris yang
-biasanya dicetak di badge jadi field yang kamu isi. Hardware-nya digambar
-datar, bukan dirender; mengejar mockup 3D di SVG menghasilkan setengah-render
-yang janggal dan berkelahi dengan sisa halaman.
+**Formnya berbentuk nametag**: kepala badge berisi penerbit dan tanggalnya,
+lalu nama event, lalu baris-baris yang biasanya *dicetak* di badge jadi field
+yang kamu isi. Yang mengatur spasinya adalah satu syarat — semua field harus
+muat satu layar di samping hero. Apa pun yang dekorasi dan bukan informasi
+(lanyard, lubang jepitan, nomor seri, barcode) sudah dibuang karena masing-
+masing memakan ruang vertikal yang dibutuhkan field.
 
 Logikanya **tidak diduplikasi**: `useSignupForm` memegang validasi, submit, dan
 pemasangan ulang error dari server; `SignupFields` memegang kelima kontrolnya
