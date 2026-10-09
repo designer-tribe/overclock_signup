@@ -3,9 +3,12 @@
 Landing page satu-section untuk peserta webinar Overclock: sign-up + penjadwalan
 sesi 1-on-1.
 
-Ada **tiga variasi desain** yang sedang ditinjau. Pemilihnya ada di tab kiri layar —
-klik untuk membuka panel pilihan. Pilihannya disimpan di URL (`?v=2&img=2`)
-sehingga bisa dikirim sebagai tautan.
+Ada **dua halaman** yang sedang ditinjau, masing-masing dengan variasinya
+sendiri. Pemilihnya ada di tab kiri layar — klik untuk membuka panel pilihan.
+Pilihannya disimpan di URL (`?page=landing&v=1`) sehingga bisa dikirim sebagai
+tautan.
+
+**Signup** — satu section: pitch dan form berdampingan.
 
 1. **Studio** — latar paper, figur CRT yang di-scrub mouse.
 2. **Workplace** — foto full-bleed yang digelapkan, form di atasnya. Punya
@@ -14,8 +17,12 @@ sehingga bisa dikirim sebagai tautan.
    berayun pelan, dengan partikel ambient yang terus mengalir masuk. Kursor
    memecah marknya.
 
-Ketiganya memakai `SignupForm` dan `HeroCopy` yang sama; yang berbeda hanya
-permukaannya.
+**Landing** — beberapa section, di-scroll, dengan form yang menemani di samping.
+
+1. **V1** — hero foto, profil pembicara, takeaway, dan kolom form yang sticky.
+
+Id variasinya **per halaman**: `v=1` berarti Studio di Signup dan V1 di Landing.
+Semuanya memakai `SignupForm` yang sama; yang berbeda permukaannya.
 
 Figur CRT-head adalah **video yang di-scrub mouse**: videonya tidak pernah
 autoplay, gerakan mouse horizontal yang menarik playhead-nya. Lihat
@@ -62,6 +69,7 @@ app/
 components/
   variants/           VariantOne (Studio) · VariantTwo (Workplace) · VariantThree (Particles)
   variants/particles/ Sampling logomark + simulasi partikel + canvas r3f
+  landing/            Halaman Landing V1 — hero foto, profil pembicara, takeaway
   variations/         Switcher + panel pemilih (HTML popover API)
   hero/HeroCopy.tsx   Reveal headline per baris (SplitText + mask)
   hero/HeroVisual.tsx Video figur + scrub mengikuti mouse — hanya di variation 1
@@ -74,7 +82,7 @@ hooks/
   useReducedMotion.ts
   useToday.ts
 lib/
-  variations.ts       Daftar variasi & background + state-nya (dibaca dari URL)
+  variations.ts       Daftar halaman, variasi & background + state-nya (dari URL)
   gsap.ts             Registrasi plugin terpusat — selalu import dari sini
   schema.ts           signupSchema (Zod)
   storage/            Adapter tujuan data signup
@@ -114,6 +122,41 @@ Tidak ada komponen atau action yang perlu disentuh.
 - **Proteksi spam.** Form ini publik; sebelum live sebaiknya ditambah honeypot
   atau rate limit.
 - `robots` masih `noindex` di `app/layout.tsx` — lepas saat siap publik.
+
+## Landing V1
+
+**Aset yang masih placeholder** — ketiganya sudah dijanjikan, strukturnya
+dibangun duluan supaya tinggal tukar:
+
+- **Foto hero** → sementara pakai `assets/variation-two-bg-2.webp` (foto
+  workshop hitam-putih) dengan filter sepia agar hangat seperti comp. Begitu
+  foto aslinya masuk, ganti import-nya **dan buang filternya** — foto yang
+  sudah di-grade tidak boleh di-grade dua kali.
+- **Potret Ahmed Haque** → blok inisial "AH" dengan footprint persis sama.
+- **Logo VYOND** → kotak putus-putus. Sengaja tidak digambar: itu mark pihak
+  lain, menebaknya lebih buruk daripada kosong.
+- **Take-away file** → belum dijanjikan. `Takeaways` menerima prop `fileHref`;
+  tanpa itu barisnya dirender sebagai teks biasa, bukan link mati.
+
+**Form sticky-nya satu baris grid.** Kolom kiri adalah *satu* grid item tinggi
+berisi semua section; kolom kanan satu item pendek di sebelahnya. Karena
+sebaris, item kanan bisa `sticky` sementara barisnya scroll — dan dia wajib
+`self-start`: grid item yang teregang setinggi barisnya tidak punya ruang
+gerak dan tidak akan menempel sama sekali.
+
+Band fotonya adalah **layer di belakang grid**, bukan section di dalamnya, supaya
+kolom form bisa mulai dari paling atas halaman dan menimpanya seperti di comp.
+Tinggi band dan `min-height` blok hero adalah satu keputusan di dua tempat —
+band harus berhenti di celah antara standfirst dan kartu pembicara. Ubah salah
+satu, cek yang lain.
+
+Scrim-nya cokelat hangat, bukan token `ink`. Ink itu nyaris netral, dan
+ditumpuk di atas foto sepia dengan kekuatan segini dia justru membatalkan
+kehangatan yang baru saja dipasang — bandnya keluar abu-abu.
+
+Di bawah lg kolomnya menumpuk dan form ikut mengalir biasa, tidak sticky:
+nempel di layar pendek artinya kartu yang menutupi sebagian besar viewport
+sepanjang halaman.
 
 ## Partikel logomark (variation 3)
 

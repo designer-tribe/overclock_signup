@@ -3,9 +3,10 @@
 import { useRef } from "react";
 import {
   BACKGROUNDS,
-  VARIATIONS,
+  BACKGROUND_OWNER,
+  PAGES,
+  findPage,
   type Selection,
-  type VariationId,
 } from "@/lib/variations";
 
 type VariationPanelProps = {
@@ -13,13 +14,10 @@ type VariationPanelProps = {
   onChange: (next: Partial<Selection>) => void;
 };
 
-/** Which variation carries a background choice, and so gets the second group. */
-const BACKGROUND_OWNER: VariationId = 2;
-
 const POPOVER_ID = "variation-panel";
 
 /**
- * Review control for switching between design variations.
+ * Review control for switching between the designs on offer.
  *
  * Built on the HTML popover API rather than a dialog: this is a panel you poke
  * at while looking at the page behind it, not something that should dim the
@@ -28,8 +26,8 @@ const POPOVER_ID = "variation-panel";
  * Escape — and the `popoverTarget` pairing means the open/close state needs no
  * React state at all.
  *
- * Deliberately not styled like either variation: it is scaffolding for picking
- * a direction, not part of the page.
+ * Deliberately not styled like any of the designs: it is scaffolding for
+ * picking a direction, not part of the page.
  */
 export function VariationPanel({ selection, onChange }: VariationPanelProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -48,6 +46,13 @@ export function VariationPanel({ selection, onChange }: VariationPanelProps) {
         : "border-ink/20 bg-white text-ink hover:border-ink/45"
     }`;
 
+  const page = findPage(selection.page);
+  // The background group belongs to one page. Shown on that page whatever the
+  // variation — picking one switches to the variation that has backgrounds —
+  // but hidden elsewhere, where it would be a control that silently drags you
+  // to a different page.
+  const showBackgrounds = selection.page === BACKGROUND_OWNER.page;
+
   return (
     <>
       <button
@@ -65,7 +70,7 @@ export function VariationPanel({ selection, onChange }: VariationPanelProps) {
           Variation
         </span>
         <span className="sr-only">
-          Open the variation picker. Currently showing variation{" "}
+          Open the variation picker. Currently showing {page.name} variation{" "}
           {selection.variation}.
         </span>
       </button>
@@ -106,9 +111,28 @@ export function VariationPanel({ selection, onChange }: VariationPanelProps) {
         </div>
 
         <fieldset className="mt-4 border-0 p-0">
+          <legend className="font-sans text-[1.05rem] font-semibold">Page</legend>
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            {PAGES.map((entry) => (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => choose({ page: entry.id })}
+                aria-pressed={entry.id === selection.page}
+                className={pill(entry.id === selection.page)}
+              >
+                {entry.name}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        {/* The variations of whichever page is showing — the ids are per page,
+            so this list changes with the choice above it. */}
+        <fieldset className="mt-5 border-0 p-0">
           <legend className="font-sans text-[1.05rem] font-semibold">Layout</legend>
           <div className="mt-2.5 flex flex-wrap gap-2">
-            {VARIATIONS.map((variation) => (
+            {page.variations.map((variation) => (
               <button
                 key={variation.id}
                 type="button"
@@ -122,40 +146,36 @@ export function VariationPanel({ selection, onChange }: VariationPanelProps) {
           </div>
         </fieldset>
 
-        {/*
-          The background group is always shown, and picking one also switches to
-          the variation that has a background — a control that silently does
-          nothing until you select something else first is worse than no
-          control.
-        */}
-        <fieldset className="mt-5 border-0 p-0">
-          <legend className="font-sans text-[1.05rem] font-semibold">
-            Background
-          </legend>
-          <div className="mt-2.5 flex flex-wrap gap-2">
-            {BACKGROUNDS.map((background) => {
-              const picked =
-                selection.variation === BACKGROUND_OWNER &&
-                selection.background === background.id;
-              return (
-                <button
-                  key={background.id}
-                  type="button"
-                  onClick={() =>
-                    choose({
-                      variation: BACKGROUND_OWNER,
-                      background: background.id,
-                    })
-                  }
-                  aria-pressed={picked}
-                  className={pill(picked)}
-                >
-                  Image {background.id}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
+        {showBackgrounds && (
+          <fieldset className="mt-5 border-0 p-0">
+            <legend className="font-sans text-[1.05rem] font-semibold">
+              Background
+            </legend>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {BACKGROUNDS.map((background) => {
+                const picked =
+                  selection.variation === BACKGROUND_OWNER.variation &&
+                  selection.background === background.id;
+                return (
+                  <button
+                    key={background.id}
+                    type="button"
+                    onClick={() =>
+                      choose({
+                        variation: BACKGROUND_OWNER.variation,
+                        background: background.id,
+                      })
+                    }
+                    aria-pressed={picked}
+                    className={pill(picked)}
+                  >
+                    Image {background.id}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
       </div>
     </>
   );

@@ -7,18 +7,20 @@ import {
   parseSelection,
   setSelection,
   subscribe,
+  type Selection,
 } from "@/lib/variations";
 import { VariantOne } from "@/components/variants/VariantOne";
 import { VariantTwo } from "@/components/variants/VariantTwo";
 import { VariantThree } from "@/components/variants/VariantThree";
+import { LandingOne } from "@/components/landing/LandingOne";
 import { VariationPanel } from "./VariationPanel";
 
 /**
- * Renders whichever variation the URL asks for, plus the control to change it.
+ * Renders whichever design the URL asks for, plus the control to change it.
  *
- * Only the active variation is mounted, not all of them hidden behind CSS —
- * they pull quite different assets (a 2.1MB video, a full-bleed photograph, a
- * WebGL bundle) and rendering the set would fetch all of it on every visit.
+ * Only the active one is mounted, not all of them hidden behind CSS — they
+ * pull quite different assets (a 2.1MB video, full-bleed photographs, a WebGL
+ * bundle) and rendering the set would fetch all of it on every visit.
  */
 export function VariationSwitcher() {
   const key = useSyncExternalStore(
@@ -30,14 +32,25 @@ export function VariationSwitcher() {
 
   return (
     <>
-      {selection.variation === 3 ? (
-        <VariantThree />
-      ) : selection.variation === 2 ? (
-        <VariantTwo background={selection.background} />
-      ) : (
-        <VariantOne />
-      )}
+      {render(selection)}
       <VariationPanel selection={selection} onChange={setSelection} />
     </>
   );
+}
+
+function render(selection: Selection) {
+  if (selection.page === "landing") {
+    // Only V1 so far; the registry is what decides which ids are reachable, so
+    // anything else has already been normalised away before it gets here.
+    return <LandingOne />;
+  }
+
+  switch (selection.variation) {
+    case 3:
+      return <VariantThree />;
+    case 2:
+      return <VariantTwo background={selection.background} />;
+    default:
+      return <VariantOne />;
+  }
 }
