@@ -211,6 +211,28 @@ Di bawah lg kolomnya menumpuk dan form ikut mengalir biasa, tidak sticky:
 nempel di layar pendek artinya kartu yang menutupi sebagian besar viewport
 sepanjang halaman.
 
+## Landing V2
+
+`?page=landing&v=2` — `components/landing/LandingTwo.tsx`. Kontennya sama
+dengan V1 (foto hero, copy, pembicara, takeaway, footer), layout-nya mengikuti
+comp V2:
+
+- Form badge berpita (`NametagForm`, sama dengan V1) **dipaku di hero**, tidak
+  sticky — halamannya pendek. Bayangannya offset rust keras
+  (`cardShadow`), bukan bayangan lembut V1.
+- Tiga blok piksel (rust, teal, rust kecil) menurun dari tepi kiri badge,
+  ditempatkan dari `--band` sehingga selalu menempel di tepi bawah foto. Hanya
+  di `lg` ke atas.
+- Logo VYOND | Overclock di `z-30`, di atas pita lanyard yang naik ke luar
+  layar.
+- Kolom: dari `xl` badge 628px (lebar comp) dan copy mengisi sisanya; di `lg`
+  dibagi rata, karena 628px di layar 1024 menyisakan kolom headline yang
+  terlalu sempit.
+
+**Aset yang belum ada:** ilustrasi ranting pohon dengan orang berbaring di
+bawah hero kiri. Tempatnya sudah kosong di layout; tinggal ditambahkan saat
+file-nya dikirim.
+
 ## Partikel logomark (variation 3)
 
 Bentuknya diambil dari path SVG brand-nya sendiri (`markPoints.ts`), di-sample

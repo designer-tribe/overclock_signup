@@ -21,7 +21,7 @@ export function LandingFooter() {
         {/* The box is the footer's own frame, inset from the page edges, which
             is what keeps it from reading as the page simply turning black. */}
         <div className="border border-white/15">
-          <div className="grid gap-x-10 gap-y-12 p-8 sm:p-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.25fr)_minmax(0,0.85fr)_minmax(0,0.6fr)] lg:p-12">
+          <div className="grid gap-x-10 gap-y-12 p-8 sm:grid-cols-2 sm:p-10 lg:p-12 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1.25fr)_minmax(0,0.85fr)_minmax(0,0.6fr)]">
             <div>
               <h2 className="font-serif text-[1.6rem] leading-tight">
                 Ready to Join a Cohort?

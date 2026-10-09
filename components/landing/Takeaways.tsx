@@ -38,7 +38,7 @@ export function Takeaways({
   );
 }
 
-function FileRow({ className = "", href }: { className?: string; href?: string }) {
+export function FileRow({ className = "", href }: { className?: string; href?: string }) {
   const content = (
     <>
       <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-ink text-white">

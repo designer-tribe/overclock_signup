@@ -24,7 +24,17 @@ import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 
 const EVENT_DATE = "Wednesday, October 14";
 
-export function NametagForm({ className = "" }: { className?: string }) {
+/** The card's own drop shadow, unless a page gives it another. */
+const SOFT_SHADOW = "shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)]";
+
+export function NametagForm({
+  className = "",
+  cardShadow = SOFT_SHADOW,
+}: {
+  className?: string;
+  /** Landing V2 sets the badge on a hard rust offset instead. */
+  cardShadow?: string;
+}) {
   const root = useRef<HTMLDivElement>(null);
   const { register, errors, onSubmit, status, sending, formError } =
     useSignupForm();
@@ -58,7 +68,7 @@ export function NametagForm({ className = "" }: { className?: string }) {
       <Strap side="far" />
       <Strap side="near" />
 
-      <div className="relative z-10 rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink shadow-[0_24px_48px_-20px_rgba(0,0,0,0.55)] sm:px-8">
+      <div className={`relative z-10 rounded-[2px] border border-ink/10 bg-badge px-6 pt-11 pb-5 text-ink sm:px-8 ${cardShadow}`}>
         <Slot />
 
         {status === "success" ? (

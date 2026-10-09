@@ -13,6 +13,7 @@ import { VariantOne } from "@/components/variants/VariantOne";
 import { VariantTwo } from "@/components/variants/VariantTwo";
 import { VariantThree } from "@/components/variants/VariantThree";
 import { LandingOne } from "@/components/landing/LandingOne";
+import { LandingTwo } from "@/components/landing/LandingTwo";
 import { VariationPanel } from "./VariationPanel";
 
 /**
@@ -40,9 +41,9 @@ export function VariationSwitcher() {
 
 function render(selection: Selection) {
   if (selection.page === "landing") {
-    // Only V1 so far; the registry is what decides which ids are reachable, so
-    // anything else has already been normalised away before it gets here.
-    return <LandingOne />;
+    // The registry decides which ids are reachable, so anything else has
+    // already been normalised away before it gets here.
+    return selection.variation === 2 ? <LandingTwo /> : <LandingOne />;
   }
 
   switch (selection.variation) {

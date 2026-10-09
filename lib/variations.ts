@@ -47,6 +47,11 @@ export const PAGES = [
         name: "V1",
         summary: "Photo hero, speaker and takeaways, sticky form column.",
       },
+      {
+        id: 2,
+        name: "V2",
+        summary: "Badge pinned in the hero, takeaways and speaker side by side.",
+      },
     ],
   },
 ] as const;
