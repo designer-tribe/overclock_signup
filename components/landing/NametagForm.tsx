@@ -136,9 +136,9 @@ export function NametagForm({ className = "" }: { className?: string }) {
  * from it (1.5× its width). The far ribbon starts just right of it and is
  * only ever seen above the badge.
  */
-const RIBBON_W = "w-9"; // 2.25rem
+const RIBBON_W = "w-[2.375rem]";
 const NEAR_X = "-translate-x-1/2";
-const FAR_X = "translate-x-[15%]";
+const FAR_X = "-translate-x-[5%]";
 
 function Strap({ side }: { side: "near" | "far" }) {
   const near = side === "near";
@@ -183,7 +183,7 @@ function Slot() {
   return (
     <span
       aria-hidden
-      className="absolute top-4 left-1/2 h-3 w-[3.375rem] -translate-x-1/2 rounded-full bg-[#0b0d0e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.9),0_1px_0_rgba(255,255,255,0.55)]"
+      className="absolute top-4 left-1/2 h-3 w-[3.5625rem] -translate-x-1/2 rounded-full bg-[#0b0d0e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.9),0_1px_0_rgba(255,255,255,0.55)]"
     />
   );
 }
