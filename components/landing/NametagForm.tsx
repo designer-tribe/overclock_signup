@@ -64,11 +64,33 @@ export function NametagForm({ className = "" }: { className?: string }) {
         {status === "success" ? (
           // A minimum height so the badge does not snap to a fraction of its
           // size the moment it is submitted, taking the page with it.
-          <div className="flex min-h-[20rem] flex-col justify-center">
+          <div className="flex min-h-[20rem] flex-col items-center justify-center text-center">
+            {/* The sent mark: a paper plane, for "on its way" rather than
+                a plain checkmark — it's a request going out, not a task done. */}
+            <span
+              aria-hidden
+              className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-white"
+            >
+              <svg viewBox="0 0 24 24" className="h-[1.4rem] w-[1.4rem]" fill="none" aria-hidden>
+                <path
+                  d="M4 12.5 20.5 4 15 20l-3.8-6.2L4 12.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M11.2 13.8 20.5 4"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+
             <h2 className="font-sans text-2xl font-semibold leading-snug">
               Thanks — your request is on its way.
             </h2>
-            <p className="mt-3 text-[0.92rem] leading-relaxed text-ink/70">
+            <p className="mt-3 max-w-[22rem] text-[0.92rem] leading-relaxed text-ink/70">
               Our team will be in touch within 48 hours to find a time that
               works for you.
             </p>
