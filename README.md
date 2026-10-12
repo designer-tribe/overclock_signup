@@ -150,14 +150,22 @@ fotonya, dan hairline pucat di atas gambar gelap itu bukan garis grid — itu
 goresan.
 
 **Footer-nya** disalin dari screenshot overclockaccelerator.com, lalu dipangkas
-atas permintaan: yang tersisa cuma intro ("Ready to Join a Cohort?", bukan lagi
-link) dan tiga link di grup Support — Contact Us, Privacy Policy, Terms and
-Conditions. Explore, Blog, baris ikon sosial, dan "Still exploring? View our
-Accelerators" sudah dihapus dari `footerNav.ts`, bukan cuma disembunyikan.
+atas permintaan: yang tersisa intro ("Ready to Join a Cohort?", bukan lagi
+link), tiga link di grup Support (Contact Us, Privacy Policy, Terms and
+Conditions), dan baris ikon sosial (Stay Connected). Explore, Blog, dan "Still
+exploring? View our Accelerators" sudah dihapus dari `footerNav.ts`, bukan
+cuma disembunyikan — baris sosial sendiri sempat ikut terhapus di satu pass
+lalu diminta kembali.
 
-**Path ketiga link itu hasil inferensi** dari labelnya, bukan dibaca dari situs
-aslinya — domainnya diblokir network policy environment ini (dicek ulang lewat
-DNS, bukan cuma WebFetch) dan juga tidak muncul di web search. Cek ketiganya
+**Path ketiga link Support itu masih hasil inferensi** dari labelnya, bukan
+dibaca dari situs aslinya — domainnya diblokir network policy environment ini
+(DNS-level) dan `WebFetch` gagal untuk domain apa pun di sini, bukan cuma yang
+ini. `SOCIAL_LINKS` beda ceritanya: `WebSearch` berjalan di sisi server, bukan
+lewat jaringan environment ini, dan berhasil membaca metadata situs asli —
+email (`team@overclockaccelerator.com`), handle LinkedIn
+(`linkedin.com/company/overclock-accelerator`) dan YouTube
+(`youtube.com/@overclockaccelerator`) itu dikonfirmasi dari situsnya sendiri,
+bukan ditebak dari labelnya seperti tiga link Support. Cek ketiga link Support
 sebelum ini publik. Semuanya ada di `components/landing/footerNav.ts` — satu
 file untuk dikoreksi.
 
