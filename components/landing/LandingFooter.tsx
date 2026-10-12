@@ -36,11 +36,20 @@ export function LandingFooter() {
           */}
           <div className="flex flex-col gap-y-12 p-8 sm:flex-row sm:items-start sm:justify-between sm:p-10 lg:p-12">
             <div>
+              {/*
+                The original footer's line pushes cohort enrollment — it had
+                "Still exploring? View our Accelerators" right under it, which
+                is gone. This page isn't an enrollment page at all; its one
+                ask is the form above ("Request a conversation"). Rewritten to
+                back that up instead of pointing somewhere this page doesn't
+                go. PLACEHOLDER COPY — written to fit, not supplied; swap for
+                the real line when there is one.
+              */}
               <h2 className="font-serif text-[1.6rem] leading-tight">
-                Ready to Join a Cohort?
+                Have Questions Before You Decide?
               </h2>
               <p className="mt-3 max-w-xs text-[0.95rem] leading-relaxed text-white/80">
-                Know which Accelerator you want? Skip straight to enrollment.
+                Reach out to our team any time — we&rsquo;re happy to help.
               </p>
             </div>
 
