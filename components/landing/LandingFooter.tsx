@@ -32,9 +32,17 @@ export function LandingFooter({
 }) {
   return (
     <footer className="bg-void text-white">
-      <div className={`mx-auto w-full ${maxWidth} px-6 py-10 sm:px-10 lg:px-14`}>
-        {/* The box is the footer's own frame, inset from the page edges, which
-            is what keeps it from reading as the page simply turning black. */}
+      {/*
+        No horizontal padding here: this box's left and right edges have to
+        land exactly on the content grid's own edges above it (the outer
+        container edge and, on V1, the mirrored rule at the far right) — a
+        padded wrapper pulled the box in from both, so it no longer lined up
+        with either. `py-10` is still fine; the mismatch was horizontal.
+      */}
+      <div className={`mx-auto w-full ${maxWidth} py-10`}>
+        {/* The box is the footer's own frame, inset only from the browser's
+            own edges (via the container's max-width + its own centring),
+            not from the content above it. */}
         <div className="border border-white/15">
           {/*
             Two things, not three: the intro on one side, Support and Stay
