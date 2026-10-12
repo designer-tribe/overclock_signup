@@ -149,11 +149,21 @@ baru mulai setelah band foto habis. Dipasang lebih tinggi dia melintasi
 fotonya, dan hairline pucat di atas gambar gelap itu bukan garis grid — itu
 goresan.
 
-**Footer-nya** disalin dari screenshot overclockaccelerator.com. Label-nya
-benar; **path link-nya hasil inferensi** dari labelnya, karena domainnya
-diblokir network policy environment ini jadi href aslinya tidak bisa dibaca.
-Semuanya ada di `components/landing/footerNav.ts` — satu file untuk dikoreksi.
-Tanda tangan "Built by Tribe" memakai `assets/tribe-signature.png` (putih di atas transparan, tinggi 32px).
+**Footer-nya** disalin dari screenshot overclockaccelerator.com, lalu dipangkas
+atas permintaan: yang tersisa cuma intro ("Ready to Join a Cohort?", bukan lagi
+link) dan tiga link di grup Support — Contact Us, Privacy Policy, Terms and
+Conditions. Explore, Blog, baris ikon sosial, dan "Still exploring? View our
+Accelerators" sudah dihapus dari `footerNav.ts`, bukan cuma disembunyikan.
+
+**Path ketiga link itu hasil inferensi** dari labelnya, bukan dibaca dari situs
+aslinya — domainnya diblokir network policy environment ini (dicek ulang lewat
+DNS, bukan cuma WebFetch) dan juga tidak muncul di web search. Cek ketiganya
+sebelum ini publik. Semuanya ada di `components/landing/footerNav.ts` — satu
+file untuk dikoreksi.
+
+Tanda tangan "Built by Tribe" memakai `assets/tribe-signature.png` (putih di
+atas transparan, tinggi 32px) dan sekarang jadi link ke tribedesignworks.com,
+dibuka di tab baru.
 
 **Formnya berbentuk nametag**: kepala badge berisi penerbit dan tanggalnya,
 lalu nama event, lalu baris-baris yang biasanya *dicetak* di badge jadi field
