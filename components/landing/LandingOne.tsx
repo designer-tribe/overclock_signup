@@ -144,7 +144,24 @@ export function LandingOne() {
               ends. Carried any higher they cross the photograph, and a pale
               hairline over a dark image is not a grid line, it is a scratch.
             */}
-            <div className={`order-3 lg:border-x ${RULE}`}>
+            <div className={`relative order-3 lg:border-x ${RULE}`}>
+              {/*
+                Mirrors the left edge rule at the container's far right edge
+                — the comp's grid frames the page on both sides, not just the
+                left. Same idea as BAND_RULE's horizontal line, rotated:
+                195% of this column's own width is one column (100%) plus
+                the second column's width at this grid's ratio (95% of the
+                first). Change the ratio, change this too, same as
+                BAND_RULE. The flat `+3px` corrects for this column's own
+                1px border on each side, which eats into the percentage
+                base twice (once for the 100%, once for the 95%) — constant
+                regardless of viewport, confirmed at four widths.
+              */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-[calc(195%+3px)] hidden w-px bg-rule lg:block"
+              />
+
               <div className={`${BAND_RULE} ${BAND} py-12`}>
                 <SpeakerBio />
               </div>

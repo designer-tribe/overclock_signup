@@ -146,7 +146,9 @@ export function LandingTwo() {
         </div>
       </div>
 
-      <LandingFooter />
+      {/* V2's own container is 1440px, not V1's 1500px — see the note
+          on LandingFooter's maxWidth prop. */}
+      <LandingFooter maxWidth="max-w-[1440px]" />
     </main>
   );
 }

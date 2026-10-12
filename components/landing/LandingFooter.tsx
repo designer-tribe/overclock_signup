@@ -18,11 +18,21 @@ import {
  *
  * Three columns now rather than four — see the warning in `footerNav.ts`
  * about the Support links' paths.
+ *
+ * `maxWidth`: the footer is shared by both layouts, and they don't agree on
+ * how wide their own content column is (V1's container is 1500px, V2's is
+ * 1440px) — on a wide screen a mismatched footer reads as off-centre under
+ * the page above it. Each page passes its own container width in; default is
+ * V1's, since that was the first layout this shipped on.
  */
-export function LandingFooter() {
+export function LandingFooter({
+  maxWidth = "max-w-[1500px]",
+}: {
+  maxWidth?: string;
+}) {
   return (
     <footer className="bg-void text-white">
-      <div className="mx-auto w-full max-w-[1500px] px-6 py-10 sm:px-10 lg:px-14">
+      <div className={`mx-auto w-full ${maxWidth} px-6 py-10 sm:px-10 lg:px-14`}>
         {/* The box is the footer's own frame, inset from the page edges, which
             is what keeps it from reading as the page simply turning black. */}
         <div className="border border-white/15">
