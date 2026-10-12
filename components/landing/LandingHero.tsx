@@ -51,10 +51,23 @@ export function LandingHeroBackdrop({ className = "" }: { className?: string }) 
   );
 }
 
-/** The co-branding bar: the partner's lockup, then Overclock's. */
-export function LandingBrandBar({ className = "" }: { className?: string }) {
+/**
+ * The co-branding bar: the partner's lockup, then Overclock's.
+ *
+ * `align`: V2 pins this top-right over the hero, so it defaults to `"end"`.
+ * V1 lines it up with the headline below instead, hence `"start"` there.
+ */
+export function LandingBrandBar({
+  className = "",
+  align = "end",
+}: {
+  className?: string;
+  align?: "start" | "end";
+}) {
   return (
-    <div className={`flex items-center justify-end gap-5 ${className}`}>
+    <div
+      className={`flex items-center gap-5 ${align === "start" ? "justify-start" : "justify-end"} ${className}`}
+    >
       {/* Height set against the Overclock lockup beside it rather than from
           the file, which is why the asset is trimmed to the mark itself. */}
       <Image src={vyondLogo} alt="Vyond" className="h-5 w-auto" />

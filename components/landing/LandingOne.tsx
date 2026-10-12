@@ -82,18 +82,13 @@ export function LandingOne() {
 
       <div className="relative mx-auto w-full max-w-[1500px]">
         {/*
-          From lg the lockup's right edge lines up with the badge's: the bar
-          repeats the page grid's columns, and in the second one it takes the
-          same padding and the same centred 30rem box the badge sits in.
-          z-30: aligned like this the lockup sits over the badge's strap, and
-          the logos have to stay legible where the ribbon passes behind them.
+          The lockup's left edge lines up with the headline's below it — same
+          `BAND` padding, same left column. z-30: on narrower desktop widths
+          the badge's strap can still pass behind this row, and the logos have
+          to stay legible there.
         */}
-        <div
-          className="relative z-30 h-[var(--bar)] px-6 sm:px-10 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:px-0"
-        >
-          <div className="h-full lg:col-start-2 lg:px-10">
-            <LandingBrandBar className="mx-auto h-full max-w-[30rem]" />
-          </div>
+        <div className={`relative z-30 h-[var(--bar)] ${BAND}`}>
+          <LandingBrandBar align="start" className="h-full" />
         </div>
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
