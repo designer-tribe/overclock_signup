@@ -24,6 +24,21 @@ import {
  * 1440px) — on a wide screen a mismatched footer reads as off-centre under
  * the page above it. Each page passes its own container width in; default is
  * V1's, since that was the first layout this shipped on.
+ *
+ * At a normal frame (≤1440px, i.e. most laptop and desktop widths) this is
+ * the original inset box, with its own padding — that framed look was the
+ * point from the start, and the content grid above it doesn't reach the true
+ * edges at those widths either. Only past 1440px does the padding drop to 0,
+ * so the box's own edges land exactly on the content grid's — that gap is
+ * where the mismatch actually showed up, on screens wide enough that the
+ * grid's max-width container no longer fills the viewport.
+ *
+ * All four padding steps below are arbitrary `min-[Npx]:` variants, not one
+ * named breakpoint (`lg:`) plus an arbitrary one. Tailwind v4 places named
+ * breakpoints in a different cascade position than arbitrary ones, so at the
+ * same screen width a later `min-[1441px]:px-0` lost to an earlier `lg:px-14`
+ * regardless of source order — confirmed by testing them against each other
+ * directly. Same family of variant throughout sidesteps that entirely.
  */
 export function LandingFooter({
   maxWidth = "max-w-[1500px]",
@@ -32,14 +47,9 @@ export function LandingFooter({
 }) {
   return (
     <footer className="bg-void text-white">
-      {/*
-        No horizontal padding here: this box's left and right edges have to
-        land exactly on the content grid's own edges above it (the outer
-        container edge and, on V1, the mirrored rule at the far right) — a
-        padded wrapper pulled the box in from both, so it no longer lined up
-        with either. `py-10` is still fine; the mismatch was horizontal.
-      */}
-      <div className={`mx-auto w-full ${maxWidth} py-10`}>
+      <div
+        className={`mx-auto w-full ${maxWidth} py-10 px-6 min-[640px]:px-10 min-[1024px]:px-14 min-[1441px]:px-0`}
+      >
         {/* The box is the footer's own frame, inset only from the browser's
             own edges (via the container's max-width + its own centring),
             not from the content above it. */}

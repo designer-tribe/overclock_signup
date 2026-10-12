@@ -166,8 +166,26 @@ email (`team@overclockaccelerator.com`), handle LinkedIn
 (`linkedin.com/company/overclock-accelerator`) dan YouTube
 (`youtube.com/@overclockaccelerator`) itu dikonfirmasi dari situsnya sendiri,
 bukan ditebak dari labelnya seperti tiga link Support. Cek ketiga link Support
-sebelum ini publik. Semuanya ada di `components/landing/footerNav.ts` — satu
+sebelum ini publik — sudah dicoba berkali-kali lewat `WebSearch` (langsung dan
+lewat beberapa variasi query) tapi slug persisnya tidak pernah muncul di hasil
+pencarian, kemungkinan karena bukan halaman terindeks sendiri (Webflow/Framer
+sering taruh Privacy/Terms sebagai section atau popup di satu halaman, bukan
+route terpisah). Semuanya ada di `components/landing/footerNav.ts` — satu
 file untuk dikoreksi.
+
+**Lebar kotak footer berubah di 1440px.** Di bawah/sama dengan 1440px (lebar
+laptop/desktop pada umumnya) kotaknya punya padding sendiri (`px-6` →
+`min-[640px]:px-10` → `min-[1024px]:px-14`) — itu tampilan "kotak terbingkai"
+aslinya, dan di lebar segitu grid konten di atasnya juga belum tentu sampai ke
+tepi sungguhan. Di atas 1440px paddingnya `min-[1441px]:px-0`, jadi tepi
+kotak persis di tepi grid konten — di situlah dulu terlihat tidak sejajar,
+karena di layar sangat lebar container max-width-nya sendiri tidak lagi
+memenuhi viewport. Keempat step ini sengaja semuanya varian arbitrary
+`min-[Npx]:`, bukan campur breakpoint bernama (`lg:`) dengan arbitrary —
+Tailwind v4 taruh breakpoint bernama di posisi cascade yang beda dari
+arbitrary, jadi `min-[1441px]:px-0` kalah lawan `lg:px-14` di lebar yang sama
+walau urutannya sudah benar di class list. Dikonfirmasi lewat tes langsung,
+bukan tebakan.
 
 Tanda tangan "Built by Tribe" memakai `assets/tribe-signature.png` (putih di
 atas transparan, tinggi 32px) dan sekarang jadi link ke tribedesignworks.com,
