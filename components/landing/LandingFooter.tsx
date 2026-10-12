@@ -26,7 +26,15 @@ export function LandingFooter() {
         {/* The box is the footer's own frame, inset from the page edges, which
             is what keeps it from reading as the page simply turning black. */}
         <div className="border border-white/15">
-          <div className="grid gap-x-10 gap-y-12 p-8 sm:grid-cols-2 sm:p-10 lg:p-12 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(0,0.7fr)]">
+          {/*
+            Two things, not three: the intro on one side, Support and Stay
+            connected grouped together on the other. `justify-between` pushes
+            that pair as far from the intro as the row allows — the gap there
+            is whatever's left, not a fixed number — while the 42px inside the
+            pair is fixed, so the two groups always sit that close regardless
+            of how much room the row has.
+          */}
+          <div className="flex flex-col gap-y-12 p-8 sm:flex-row sm:items-start sm:justify-between sm:p-10 lg:p-12">
             <div>
               <h2 className="font-serif text-[1.6rem] leading-tight">
                 Ready to Join a Cohort?
@@ -36,29 +44,31 @@ export function LandingFooter() {
               </p>
             </div>
 
-            <FooterGroup title="Support">
-              <ul className="space-y-4">
-                {SUPPORT_LINKS.map((link) => (
-                  <FooterItem key={link.label} {...link} />
-                ))}
-              </ul>
-            </FooterGroup>
+            <div className="flex flex-col gap-y-12 sm:flex-row sm:gap-x-[42px]">
+              <FooterGroup title="Support">
+                <ul className="space-y-4">
+                  {SUPPORT_LINKS.map((link) => (
+                    <FooterItem key={link.label} {...link} />
+                  ))}
+                </ul>
+              </FooterGroup>
 
-            <FooterGroup title="Stay connected">
-              <ul className="flex gap-3">
-                {SOCIAL_LINKS.map((social) => (
-                  <li key={social.icon}>
-                    <a
-                      href={social.href}
-                      aria-label={social.label}
-                      className="flex h-11 w-11 items-center justify-center border border-white/80 transition-colors hover:bg-white hover:text-void focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
-                    >
-                      <SocialIcon name={social.icon} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </FooterGroup>
+              <FooterGroup title="Stay connected">
+                <ul className="flex gap-3">
+                  {SOCIAL_LINKS.map((social) => (
+                    <li key={social.icon}>
+                      <a
+                        href={social.href}
+                        aria-label={social.label}
+                        className="flex h-11 w-11 items-center justify-center border border-white/80 transition-colors hover:bg-white hover:text-void focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+                      >
+                        <SocialIcon name={social.icon} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </FooterGroup>
+            </div>
           </div>
 
           <div className="flex flex-col gap-4 border-t border-white/15 px-8 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-12">
