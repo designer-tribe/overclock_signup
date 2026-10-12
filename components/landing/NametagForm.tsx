@@ -65,24 +65,18 @@ export function NametagForm({ className = "" }: { className?: string }) {
           // A minimum height so the badge does not snap to a fraction of its
           // size the moment it is submitted, taking the page with it.
           <div className="flex min-h-[20rem] flex-col items-center justify-center text-center">
-            {/* The sent mark: a paper plane, for "on its way" rather than
-                a plain checkmark — it's a request going out, not a task done. */}
+            {/* The sent mark: a checkmark. */}
             <span
               aria-hidden
               className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-white"
             >
               <svg viewBox="0 0 24 24" className="h-[1.4rem] w-[1.4rem]" fill="none" aria-hidden>
                 <path
-                  d="M4 12.5 20.5 4 15 20l-3.8-6.2L4 12.5Z"
+                  d="M5 12.5 10 17.5 19.5 6.5"
                   stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M11.2 13.8 20.5 4"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
+                  strokeWidth="2"
                   strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </span>
