@@ -57,15 +57,24 @@ export function SpeakerBio({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      <p className="mt-8 text-[0.95rem] leading-[1.75] text-ink/80">
-        Ahmed Haque is the Co-Founder and CEO of the Overclock Accelerator, a
-        training and consulting firm that helps organizations and executives
-        navigate the changing AI landscape. Over the last decade, he has been a
-        founder, executive, and advisor to numerous higher education
-        institutions and ed-tech companies. Previously, he was the Chief
-        Academic Officer at Trilogy Education, where his team helped train over
-        100k adult learners to find work in the tech sector.
-      </p>
+      <div className="mt-8 space-y-4 text-[0.95rem] leading-[1.75] text-ink/80">
+        <p>
+          Formerly Chief Academic Officer at Trilogy Education, Ahmed led the
+          academic team that taught technical skills to 100,000+ adult
+          learners from non-technical backgrounds.
+        </p>
+        <p>Then it was coding, now it&rsquo;s AI.</p>
+        <p>
+          At Overclock, he works with C-suite, L&amp;D, and HR leaders to set
+          their AI strategy, train their teams, and build the agents and
+          workflows that carry it out.
+        </p>
+        <p>
+          Engagements range from executive workshops that produce a
+          prioritized AI roadmap to department-wide training that ends in a
+          hackathon, where employees build working tools for their own roles.
+        </p>
+      </div>
     </section>
   );
 }

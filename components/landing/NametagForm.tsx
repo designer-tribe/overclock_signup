@@ -128,11 +128,6 @@ export function NametagForm({ className = "" }: { className?: string }) {
                 <SubmitButton sending={sending} />
               </div>
             </form>
-
-            <p className="mt-4 text-center text-[0.76rem] text-ink/55">
-              By submitting, you agree to receive updates from Overclock
-              Accelerator. No spam.
-            </p>
           </>
         )}
       </div>

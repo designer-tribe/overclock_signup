@@ -66,33 +66,33 @@ export function LandingBrandBar({
 }) {
   return (
     <div
-      className={`flex items-center gap-5 ${align === "start" ? "justify-start" : "justify-end"} ${className}`}
+      className={`flex items-center gap-4 sm:gap-7 ${align === "start" ? "justify-start" : "justify-end"} ${className}`}
     >
       {/* Height set against the Overclock lockup beside it rather than from
-          the file, which is why the asset is trimmed to the mark itself. */}
-      <Image src={vyondLogo} alt="Vyond" className="h-5 w-auto" />
+          the file, which is why the asset is trimmed to the mark itself.
+          Both run at about 2.3x their first size from sm up; on a phone the
+          pair has to fit across the screen, so they stop at about 1.5x. */}
+      <Image src={vyondLogo} alt="Vyond" className="h-8 w-auto sm:h-11" />
 
-      <span className="h-6 w-px bg-white/25" aria-hidden />
+      <span className="h-10 w-px bg-white/25 sm:h-14" aria-hidden />
 
-      <Logo className="h-7 shrink-0 text-white" />
+      <Logo className="h-10 shrink-0 text-white sm:h-16" />
     </div>
   );
 }
 
-/** The eyebrow pill, headline and standfirst that sit on the band. */
+/** The eyebrow and headline that sit on the band. */
 export function LandingHeroCopy({ className = "" }: { className?: string }) {
   return (
     <div className={`text-white ${className}`}>
-      <p className="inline-flex rounded-full bg-paper px-4 py-2 font-sans text-[0.65rem] font-bold tracking-[0.16em] text-ink uppercase">
-        Thank you for joining with us
+      {/* A ruled eyebrow, not a pill: a filled, rounded label on a photograph
+          reads as a button, and this one goes nowhere. */}
+      <p className="flex items-center gap-3 font-sans text-[0.72rem] font-semibold tracking-[0.2em] text-white/85 uppercase">
+        <span className="h-px w-8 bg-white/60" aria-hidden />
+        Thank you for joining us
       </p>
 
       <HeroCopy tone="light" className="mt-6 max-w-2xl" />
-
-      <p className="mt-5 max-w-md text-[1.05rem] leading-relaxed text-white/85">
-        Now let&rsquo;s map what it means for your people, your teams, and your
-        strategy.
-      </p>
     </div>
   );
 }

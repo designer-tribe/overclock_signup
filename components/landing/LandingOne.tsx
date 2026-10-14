@@ -73,7 +73,7 @@ export function LandingOne() {
       style={
         {
           "--band": "620px",
-          "--bar": "5.5rem",
+          "--bar": "8rem",
           "--cell": "2.75rem",
         } as React.CSSProperties
       }

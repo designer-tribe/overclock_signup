@@ -71,13 +71,13 @@ export function LandingTwo() {
           runs up off the top of the screen, and where it passes the lockup the
           logos have to stay legible.
         */}
-        <LandingBrandBar className="relative z-30 h-[5.5rem] lg:absolute lg:top-[4.9rem] lg:right-14 lg:h-auto" />
+        <LandingBrandBar className="relative z-30 h-[8rem] lg:absolute lg:top-[4.9rem] lg:right-14 lg:h-auto" />
 
         <div className={`grid ${COLUMNS}`}>
           {/* The copy sits on the photograph's lower edge, as in V1.
               `self-start`: stretched to the row, which the badge makes taller
               than the photograph, justify-end would drop the copy off it. */}
-          <div className="flex min-h-[calc(var(--band)-5.5rem)] flex-col justify-end self-start pb-14 lg:min-h-[var(--band)]">
+          <div className="flex min-h-[calc(var(--band)-8rem)] flex-col justify-end self-start pb-14 lg:min-h-[var(--band)]">
             <LandingHeroCopy />
           </div>
 
@@ -132,16 +132,24 @@ export function LandingTwo() {
               </div>
             </div>
 
-            <p className="mt-10 text-[0.95rem] leading-[1.75] text-ink/80 lg:mt-14">
-              Ahmed Haque is the Co-Founder and CEO of the Overclock
-              Accelerator, a training and consulting firm that helps
-              organizations and executives navigate the changing AI landscape.
-              Over the last decade, he has been a founder, executive, and
-              advisor to numerous higher education institutions and ed-tech
-              companies. Previously, he was the Chief Academic Officer at
-              Trilogy Education, where his team helped train over 100k adult
-              learners to find work in the tech sector.
-            </p>
+            <div className="mt-10 space-y-4 text-[0.95rem] leading-[1.75] text-ink/80 lg:mt-14">
+              <p>
+                Formerly Chief Academic Officer at Trilogy Education, Ahmed led the
+                academic team that taught technical skills to 100,000+ adult
+                learners from non-technical backgrounds.
+              </p>
+              <p>Then it was coding, now it&rsquo;s AI.</p>
+              <p>
+                At Overclock, he works with C-suite, L&amp;D, and HR leaders to set
+                their AI strategy, train their teams, and build the agents and
+                workflows that carry it out.
+              </p>
+              <p>
+                Engagements range from executive workshops that produce a
+                prioritized AI roadmap to department-wide training that ends in a
+                hackathon, where employees build working tools for their own roles.
+              </p>
+            </div>
           </section>
         </div>
       </div>
